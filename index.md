@@ -1,6 +1,6 @@
 # Breaking the 4th dimension: working with time in PostgreSQL and PostGIS
 ---
-<img src="https://pbs.twimg.com/profile_images/779351896817602562/YXf-qdul.jpg" width="100%">
+<img src="https://pbs.twimg.com/profile_images/779351896817602562/YXf-qdul.jpg" width="100%" />
 ---
 ### David Bitner dbitner@boundlessgeo.com
 Senior Development Engineer - Boundless Spatial ![](https://boundlessgeo.com/wp-content/themes/boundlessgeo/assets/images/BoundlessLogoTag.svg)
@@ -32,6 +32,7 @@ SELECT '4/5/2017'::timestamptz;
 By using the TimestampTZ data type it becomes easy to view the data in whatever locality is necessary at the moment.
 ```sql
 SELECT now();
+
 SET TIME ZONE 'Europe/Rome';
 SELECT now();
 
