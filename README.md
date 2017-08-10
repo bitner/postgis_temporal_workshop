@@ -1,3 +1,13 @@
+# Breaking the 4th dimension: working with time in PostgreSQL and PostGIS
+
+FOSS4G 2017
+David Bitner
+Senior Development Engineer
+Boundless Spatial
+dbitner@boundlessgeo.com
+
+
+
 ```sql
 SELECT '2017-01-01 00:00-6'::timestamptz;
 SELECT '2017-01-01'::timestamptz;
