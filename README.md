@@ -1,11 +1,9 @@
 # Breaking the 4th dimension: working with time in PostgreSQL and PostGIS
-
-Workshop Delivered at FOSS4G 2017 ![](http://2017.foss4g.org/images/square_color_100x100.png, "foss4g")
-David Bitner
-Senior Development Engineer
-Boundless Spatial ![](https://boundlessgeo.com/wp-content/themes/boundlessgeo/assets/images/BoundlessLogoTag.svg, "Boundless")
-dbitner@boundlessgeo.com
-
+## Workshop Delivered at ![FOSS4G](http://2017.foss4g.org/images/square_color_100x100.png)
+### David Bitner dbitner@boundlessgeo.com
+Senior Development Engineer - Boundless Spatial ![](https://boundlessgeo.com/wp-content/themes/boundlessgeo/assets/images/BoundlessLogoTag.svg)
+---
+The goal of this workshop is to walk through several examples of how to use 3rd and 4th dimension data with PostgreSQL and PostGIS with a particular emphasis on using M values with points and linestrings.
 
 
 ```sql
