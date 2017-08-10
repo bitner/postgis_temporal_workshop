@@ -1,6 +1,6 @@
 # Breaking the 4th dimension: working with time in PostgreSQL and PostGIS
 ---
-![FOSS4G](https://pbs.twimg.com/profile_images/779351896817602562/YXf-qdul.jpg)
+<img src="https://pbs.twimg.com/profile_images/779351896817602562/YXf-qdul.jpg" width="100%">
 ---
 ### David Bitner dbitner@boundlessgeo.com
 Senior Development Engineer - Boundless Spatial ![](https://boundlessgeo.com/wp-content/themes/boundlessgeo/assets/images/BoundlessLogoTag.svg)
