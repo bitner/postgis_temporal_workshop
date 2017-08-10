@@ -1,9 +1,9 @@
 # Breaking the 4th dimension: working with time in PostgreSQL and PostGIS
 
-FOSS4G 2017
+Workshop Delivered at FOSS4G 2017 ![](http://2017.foss4g.org/images/square_color_100x100.png, "foss4g")
 David Bitner
 Senior Development Engineer
-Boundless Spatial
+Boundless Spatial ![](https://boundlessgeo.com/wp-content/themes/boundlessgeo/assets/images/BoundlessLogoTag.svg, "Boundless")
 dbitner@boundlessgeo.com
 
 
