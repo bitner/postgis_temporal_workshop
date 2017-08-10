@@ -4,21 +4,30 @@
 Senior Development Engineer - Boundless Spatial ![](https://boundlessgeo.com/wp-content/themes/boundlessgeo/assets/images/BoundlessLogoTag.svg)
 ---
 The goal of this workshop is to walk through several examples of how to use 3rd and 4th dimension data with PostgreSQL and PostGIS with a particular emphasis on using M values with points and linestrings.
+---
+PostgreSQL has very extensive support for temporal data using the Timestamp, TimestampTZ, Date, Time, TimeTZ, and Interval data types. PostgreSQL is very forgiving as to how data can be input as plain text.
 
+It should be noted that in almost all cases it is better to use the Time Zone aware TimestampTZ and TimeTZ data types as the non timezone aware Timestamp and Time can be lossy and ambiguous in most circumstances. 
+
+Further, while PostgreSQL is incredibly tolerant of text data input formats, ISO8601 should be the preferred method for communicating with dates and times. Day/month/year and month/day/year can be particularly problematic as they are each preferred in different parts of the world.
 
 ```sql
 SELECT '2017-01-01 00:00-6'::timestamptz;
+
 SELECT '2017-01-01'::timestamptz;
 
 SELECT '4/5/2017'::timestamptz;
-
+```
+---
+Day/month/year and month/day/year can be particularly problematic as they are each preferred in different parts of the world.
+```sql
 SET datestyle to dmy;
 SELECT '4/5/2017'::timestamptz;
 
 SET datestyle TO DEFAULT;
 SELECT '4/5/2017'::timestamptz;
 ```
-
+By using the TimestampTZ data type it becomes easy to view the data in whatever locality is necessary at the moment.
 ```sql
 SELECT now();
 SET TIME ZONE 'Europe/Rome';
@@ -36,19 +45,20 @@ SELECT now();
 
 SELECT timezone('UTC', now());
 ```
-
+PostgreSQL also has an interval type that can maintain periods of time
 ```sql
 SELECT '1 day'::interval;
 SELECT '2016-01-01'::timestamptz + '3 months'::interval;
 ```
 
 ```sql
-
 SELECT to_timestamp(0);
 
 SELECT timezone('UTC',to_timestamp(0));
 
 SELECT extract(epoch from '2017-01-01'::timestamptz);
+
+SELECT extract(epoch from '1 hour'::interval);
 ```
 
 ```sql
