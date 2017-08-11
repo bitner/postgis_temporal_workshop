@@ -313,7 +313,8 @@ SELECT substring(st_asewkt(geom),0,100) FROM superior1003dm;
 
 SELECT * FROM superiorsplits ORDER BY runnerid, aidstation LIMIT 20;
 
-SELECT aidstation, min(split), avg(split), max(split) FROM superiorsplits GROUP BY aidstation ORDER BY min(split);
+SELECT aidstation, min(split), avg(split), max(split) 
+FROM superiorsplits GROUP BY aidstation ORDER BY min(split);
 ```
 ---
 ```sql
