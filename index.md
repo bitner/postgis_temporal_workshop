@@ -2,12 +2,12 @@
 
 ---
 
-<img src="https://pbs.twimg.com/profile_images/779351896817602562/YXf-qdul.jpg" width="650px"></img>
+<img src="https://pbs.twimg.com/profile_images/779351896817602562/YXf-qdul.jpg" width="400px"></img>
 
 ---
 ### David Bitner dbitner@boundlessgeo.com
 Senior Development Engineer - Boundless Spatial
-<img src='https://boundlessgeo.com/wp-content/themes/boundlessgeo/assets/images/BoundlessLogoTag.svg'></img>
+<img src='https://boundlessgeo.com/wp-content/themes/boundlessgeo/assets/images/BoundlessLogoTag.svg' width='400px'></img>
 
 ---
 
@@ -19,12 +19,15 @@ The goal of this workshop is to walk through several examples of how to use 3rd 
 * Elevation, Points<->Lines
 * Tracks
 ---
-
+<notes>
 PostgreSQL has very extensive support for temporal data using the Timestamp, TimestampTZ, Date, Time, TimeTZ, and Interval data types. PostgreSQL is very forgiving as to how data can be input as plain text.
 
 It should be noted that in almost all cases it is better to use the Time Zone aware TimestampTZ and TimeTZ data types as the non timezone aware Timestamp and Time can be lossy and ambiguous in most circumstances. 
 
 Further, while PostgreSQL is incredibly tolerant of text data input formats, ISO8601 should be the preferred method for communicating with dates and times. Day/month/year and month/day/year can be particularly problematic as they are each preferred in different parts of the world.
+</notes>
+
+## Exercise: Convert different text formats into timestamps
 
 ```sql
 SELECT '2017-01-01 00:00-6'::timestamptz;
@@ -34,7 +37,12 @@ SELECT '2017-01-01'::timestamptz;
 SELECT '4/5/2017'::timestamptz;
 ```
 ---
+<notes>
 Day/month/year and month/day/year can be particularly problematic as they are each preferred in different parts of the world.
+</notes>
+
+## Exercise: Use session settings to control Timestamp in/out
+
 ```sql
 SET datestyle to dmy;
 SELECT '4/5/2017'::timestamptz;
@@ -42,7 +50,13 @@ SELECT '4/5/2017'::timestamptz;
 SET datestyle TO DEFAULT;
 SELECT '4/5/2017'::timestamptz;
 ```
+---
+<notes>
 By using the TimestampTZ data type it becomes easy to view the data in whatever locality is necessary at the moment.
+</notes>
+
+## Exercise: Use session settings to control Timezone in/out
+
 ```sql
 SELECT now();
 
@@ -61,7 +75,13 @@ SELECT now();
 
 SELECT timezone('UTC', now());
 ```
+
+---
+
+<notes>
 PostgreSQL also has an interval type that can maintain periods of time
+</notes>
+
 ```sql
 SELECT '1 day'::interval;
 SELECT '2016-01-01'::timestamptz + '3 months'::interval;
