@@ -27,6 +27,9 @@ It should be noted that in almost all cases it is better to use the Time Zone aw
 
 Further, while PostgreSQL is incredibly tolerant of text data input formats, ISO8601 should be the preferred method for communicating with dates and times. Day/month/year and month/day/year can be particularly problematic as they are each preferred in different parts of the world.
 </notes>
+---
+<img src="https://imgs.xkcd.com/comics/iso_8601.png" width='500px'></img>
+---
 
 ### Exercise: Convert different text formats into timestamps
 
