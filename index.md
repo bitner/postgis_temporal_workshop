@@ -27,7 +27,7 @@ It should be noted that in almost all cases it is better to use the Time Zone aw
 Further, while PostgreSQL is incredibly tolerant of text data input formats, ISO8601 should be the preferred method for communicating with dates and times. Day/month/year and month/day/year can be particularly problematic as they are each preferred in different parts of the world.
 </notes>
 
-## Exercise: Convert different text formats into timestamps
+### Exercise: Convert different text formats into timestamps
 
 ```sql
 SELECT '2017-01-01 00:00-6'::timestamptz;
@@ -41,7 +41,7 @@ SELECT '4/5/2017'::timestamptz;
 Day/month/year and month/day/year can be particularly problematic as they are each preferred in different parts of the world.
 </notes>
 
-## Exercise: Use session settings to control Timestamp in/out
+### Exercise: Use session settings to control Timestamp in/out
 
 ```sql
 SET datestyle to dmy;
@@ -55,7 +55,7 @@ SELECT '4/5/2017'::timestamptz;
 By using the TimestampTZ data type it becomes easy to view the data in whatever locality is necessary at the moment.
 </notes>
 
-## Exercise: Use session settings to control Timezone in/out
+### Exercise: Use session settings to control Timezone in/out
 
 ```sql
 SELECT now();
