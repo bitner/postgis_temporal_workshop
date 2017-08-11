@@ -1,24 +1,29 @@
 # Breaking the 4th dimension: working with time in PostgreSQL and PostGIS
-
 ---
-
 <img src="https://pbs.twimg.com/profile_images/779351896817602562/YXf-qdul.jpg" width="400px"></img>
-
 ---
 ### David Bitner dbitner@boundlessgeo.com
 Senior Development Engineer - Boundless Spatial
 <br></br>
 <img src='https://boundlessgeo.com/wp-content/themes/boundlessgeo/assets/images/BoundlessLogoTag.svg' width='400px'></img>
-
 ---
 
 The goal of this workshop is to walk through several examples of how to use 3rd and 4th dimension data with PostgreSQL and PostGIS with a particular emphasis on using M values with points and linestrings.
 
 ---
 # Agenda
+* Setup
 * Time Basics
 * Elevation, Points<->Lines
 * Tracks
+---
+# Setup
+```bash
+createdb superior
+export PGDATABASE=superior
+psql -c "CREATE EXTENSION postgis;"
+psql -c "SELECT postgis_full_version();"
+```
 ---
 ## PostgreSQL Date / Time Datatypes and Functions
 * https://www.postgresql.org/docs/9.6/static/datatype-datetime.html
@@ -146,6 +151,24 @@ SELECT st_dumppoints(geom) FROM superior100 limit 10;
 SELECT (st_dumppoints(geom)).* FROM superior100 limit 10;
 ```
 ---
+# Shifting Gears
+<img src="https://lh3.googleusercontent.com/sVulInvyix9Ivdx3NNyka5ZPCNKgEoS9wic_HTEVFKJfLcG-cCkFgwQnTNIbTM59mQ3cHyX1RqIi5KeWlYVqJNsWWy17Pvv99jdaP-F7v1nsz5A-dZeMoTTh_QlWzxvY_SRzgaTY2bTvEGY6jnqKFWxghrpsyH6M3_HtDNPJvl35LVybmQ5v9w4Zers92dTnAjNoQCCpA8CdQufESAWL9eRwOM7Thb0_K4AK1ZWFn5h6BMYJDyqPQo61GVZzv3wsAif-Ltrn4jEG6jC39c1qvA00_jviB880UUp2AbGnICBjvlmRkv5oJl13BiAHVevQsMThP_hCnRRvMmGTd4gdEqM_8TwX11XW3dLmd-B1RsJ3pmMtdQWjQiHHMOvkXMY3T1dqVEkuOhd5Xsy2NZ2EvuDo3dEQjiHjxIqGSo_6rR0Xe15MTHfkYbj9Mv2r0Lb0Cnrjd6qOds9W_2DhAJM9mQpmeGwCjv8jHaaFNrT94g4Rt7AUYRp9u4DD1KyS8968RGuPqsgHEdE7qW1_BHHCFVngLSFFDuF05W17XRulRvpHu_Yhbsk9_xO3qBI5huGZBs39U6mfvXNeMmADlLhdcdHTINg75zGr9-6y0cqWROKielHIZpvaXH1egRQtNVp4SFaZWzF3ftmitpwNQ8qBlKDC0DdqlD5evYA99HkkOWQQn98=w2576-h1449-no" width='500px'></img>
+<notes>
+I have a bad habit of entering events where you go to really pretty places to run really far. In just a couple weeks I'll be making my first attempt to run 100 miles on the Superior Hiking Trail overlooking Lake Superior in Northern Minnesota. For the rest of this workshop, we'll use available data from previous years of this race to help setup a pace chart and create tools for my crew to help follow me during the event.
+</notes>
+---
+## Exercise: Load Superior 100 Race Course
+```bash
+shp2pgsql -I -s 26915 -D superior100.shp superior100 | psql
+```
+```sql
+SELECT * FROM superior100;
+```
+---
+<notes>
+Let's take a look at this track by blowing it up into the component points. [ST_DumpPoints](https://postgis.net/docs/ST_DumpPoints.html ) is a Set Returning Function that returns a record data type. In order to access the columns in the record, you'll notice that we must wrap the column that contains the record in parentheses.
+</notes>
+## Exercise: Show first 10 points of track
 ```sql
 WITH t AS (SELECT st_dumppoints(geom) as dump FROM superior100)
 SELECT 
@@ -157,8 +180,8 @@ FROM t
 LIMIT 10;
 ```
 ---
+## Exercise Create a table with all the points from the track
 ```sql
-DROP TABLE IF EXISTS superior100_points;
 CREATE TABLE superior100_points AS 
 WITH t AS (SELECT st_dumppoints(geom) as dump FROM superior100)
 SELECT 
@@ -169,6 +192,10 @@ SELECT
 FROM t;
 ```
 ---
+## Exercise Add an elevation to our table of track points
+```bash
+raster2pgsql -I -Y -C -s 26915 -t 100x100 sht_dem25m.tif dem | psql
+```
 ```sql
 ALTER TABLE superior100_points ADD COLUMN z float8;
 
