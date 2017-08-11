@@ -46,7 +46,7 @@ SELECT '2017-01-01'::timestamptz;
 
 SELECT '4/5/2017'::timestamptz;
 ```
-
+---
 
 ---
 <notes>
@@ -100,6 +100,7 @@ PostgreSQL also has an interval type that can maintain periods of time
 SELECT '1 day'::interval;
 SELECT '2016-01-01'::timestamptz + '3 months'::interval;
 ```
+---
 <notes>
 When no proper Time Data Types are available, one convenient way of dealing with time is to use Unix Epoch time. This is the number of seconds since the start of the Unix Epoch (1979-01-01). We will see later that using Unix Epoch can be very handy when we start to look at PostGIS Linear Referencing.
 </notes>
@@ -114,6 +115,7 @@ SELECT extract(epoch from '2017-01-01'::timestamptz);
 
 SELECT extract(epoch from '1 hour'::interval);
 ```
+---
 <notes>
 For convenience sake if you are doing this conversion frequently, PostgreSQL makes creating your own functions very easy. Let's create custom functions for converting Intervals and TimestampTZ into Epochs.
 </notes>
@@ -132,7 +134,7 @@ $$ LANGUAGE SQL;
 SELECT to_epoch('2017-01-01'::timestamptz);
 SELECT to_epoch('1 hour'::interval);
 ```
-
+---
 <notes>
 It can be very convenient to also be able to "round" time.
 </notes>
@@ -148,6 +150,7 @@ SELECT date_trunc('month', now()) + '1 month'::interval;
 SELECT st_dumppoints(geom) FROM superior100 limit 10;
 SELECT (st_dumppoints(geom)).* FROM superior100 limit 10;
 ```
+---
 
 ```sql
 
@@ -160,7 +163,7 @@ SELECT
 FROM t 
 LIMIT 10;
 ```
-
+---
 ```sql
 
 DROP TABLE IF EXISTS superior100_points;
@@ -173,7 +176,7 @@ SELECT
     st_y((dump).geom) as y
 FROM t;
 ```
-
+---
 ```sql
 
 ALTER TABLE superior100_points ADD COLUMN z float8;
@@ -184,14 +187,14 @@ SET
 FROM dem 
 WHERE st_intersects(dem.rast,geom);
 ```
-
+---
 ```sql
 
 SELECT st_asewkt(geom), x, y, z FROM superior100_points LIMIT 10;
 
 UPDATE superior100_points SET geom = st_setsrid(st_makepoint(x,y,z), 26915);
 ```
-
+---
 ```sql
 
 SELECT st_asewkt(geom) FROM superior100_points LIMIT 10;
@@ -199,7 +202,7 @@ SELECT st_asewkt(geom) FROM superior100_points LIMIT 10;
 WITH t AS (SELECT * FROM superior100_points ORDER BY PATH)
 SELECT substring(st_asewkt(st_makeline(geom)),1,100) FROM t;
 ```
-
+---
 ```sql
 
 CREATE TABLE superior1003d AS
@@ -208,7 +211,7 @@ SELECT st_makeline(geom) as geom FROM t;
 
 SELECT path, x, y, z, z-lag(z) OVER (ORDER BY PATH) FROM superior100_points LIMIT 20;
 ```
-
+---
 ```sql
 
 ALTER TABLE superior100_points ADD COLUMN elchange float8;
@@ -218,7 +221,7 @@ UPDATE superior100_points p SET elchange=t.elchange FROM t WHERE p.path=t.path;
 
 SELECT x, y, z, elchange FROM superior100_points limit 10;
 ```
-
+---
 ```sql
 
 SELECT 
@@ -226,12 +229,12 @@ SELECT
     3.28 * sum(elchange) FILTER (WHERE elchange<0) as descent 
 FROM superior100_points;
 ```
-
+---
 ```sql
 
 SELECT path, x, y, z, degrees(st_azimuth(lag(geom) OVER (ORDER BY path), geom)) FROM superior100_points LIMIT 20;
 ```
-
+---
 ```sql
 
 
@@ -239,13 +242,15 @@ SELECT st_length(geom)/1609 FROM superior100;
 SELECT st_length(geom)/1609 FROM superior1003d;
 SELECT st_3dlength(geom)/1609 FROM superior1003d;
 ```
-
+---
 ```sql
 
 
 SELECT st_asewkt(st_lineinterpolatepoint(geom,.5)) FROM superior1003d;
 SELECT st_asewkt(st_lineinterpolatepoint(geom,50*1609/st_length(geom))) FROM superior1003d;
-
+```
+---
+```sql
 SELECT
     a.aidstation,
     a.miles,
@@ -257,7 +262,9 @@ FROM
     superior1003d s
 ORDER BY a.miles
 ;
-
+```
+---
+```sql
 CREATE TABLE sections AS
 SELECT 
     aidstation,
@@ -278,11 +285,17 @@ ORDER BY a.miles
 ;
 
 SELECT aidstation, miles, substring(st_asewkt(geom),0,100) FROM sections;
+```
+---
+```sql
 
 CREATE TABLE superior1003dm AS 
 SELECT st_linemerge(st_collect(geom)) AS geom FROM sections;
 
 SELECT substring(st_asewkt(geom),0,100) FROM superior1003dm;
+```
+---
+```sql
 
 DROP TABLE superior1003dm;
 CREATE TABLE superior1003dm AS 
@@ -294,16 +307,23 @@ p2 AS
 SELECT st_makeline(geom) as geom FROM p2;
 
 SELECT substring(st_asewkt(geom),0,100) FROM superior1003dm;
+```
+---
+```sql
 
 SELECT * FROM superiorsplits ORDER BY runnerid, aidstation LIMIT 20;
 
 SELECT aidstation, min(split), avg(split), max(split) FROM superiorsplits GROUP BY aidstation ORDER BY min(split);
-
+```
+---
+```sql
 SELECT aidstation, min(split), avg(split), max(split) 
 FROM superiorsplits 
 WHERE finish BETWEEN '35 hours'::interval AND '37 hours'::interval
 GROUP BY aidstation ORDER BY min(split);
-
+```
+---
+```sql
 CREATE TABLE bitner_goal AS 
 WITH 
 goalsplits AS (
@@ -327,8 +347,14 @@ SELECT
 FROM
     sections JOIN goalsplits USING (aidstation)
 ;
+```
+---
+```sql
 
 SELECT * FROM bitner_goal;
+```
+---
+```sql
 
 CREATE TABLE bitner_goal_track AS
 WITH
