@@ -371,10 +371,14 @@ p2 AS
 SELECT st_makeline(geom) as geom FROM p2;
 
 SELECT substring(st_asewkt(geom),0,100) FROM bitner_goal_track;
-
+```
+---
+```sql
 SELECT * FROM superiorsplits 
 WHERE aidstation='finish' AND finish BETWEEN '35.5 hours'::interval AND '36.5 hours'::interval LIMIT 20;
-
+```
+---
+```sql
 CREATE TABLE target_goal AS 
 WITH 
 goalsplits AS (
@@ -399,7 +403,9 @@ FROM
 ;
 
 SELECT * FROM target_goal;
-
+```
+---
+```sql
 CREATE TABLE target_goal_track AS
 WITH
 t1 AS (
@@ -415,10 +421,14 @@ p2 AS
 SELECT st_makeline(geom) as geom FROM p2;
 
 SELECT substring(st_asewkt(geom),0,100) FROM target_goal_track;
-
+```
+---
+```sql
 SELECT st_isvalidtrajectory(geom) FROM bitner_goal_track;
 SELECT st_isvalidtrajectory(geom) FROM target_goal_track;
-
+```
+---
+```sql
 SELECT (st_closestpointofapproach(
     (SELECT st_linesubstring(geom,.5,1) FROM bitner_goal_track),
     (SELECT st_linesubstring(geom,.5,1) FROM target_goal_track)
