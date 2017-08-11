@@ -20,6 +20,12 @@ The goal of this workshop is to walk through several examples of how to use 3rd 
 * Elevation, Points<->Lines
 * Tracks
 ---
+## PostgreSQL Date / Time Datatypes and Functions
+* https://www.postgresql.org/docs/9.6/static/datatype-datetime.html
+* https://www.postgresql.org/docs/9.6/static/functions-datetime.html
+* https://www.postgresql.org/docs/9.6/static/functions-formatting.html
+
+
 <notes>
 PostgreSQL has very extensive support for temporal data using the Timestamp, TimestampTZ, Date, Time, TimeTZ, and Interval data types. PostgreSQL is very forgiving as to how data can be input as plain text.
 
@@ -40,6 +46,8 @@ SELECT '2017-01-01'::timestamptz;
 
 SELECT '4/5/2017'::timestamptz;
 ```
+
+
 ---
 <notes>
 Day/month/year and month/day/year can be particularly problematic as they are each preferred in different parts of the world.
@@ -78,6 +86,8 @@ SHOW TIME ZONE;
 SELECT now();
 
 SELECT timezone('UTC', now());
+
+SELECT now() AT TIME ZONE 'America/Chicago';
 ```
 
 ---
@@ -90,7 +100,11 @@ PostgreSQL also has an interval type that can maintain periods of time
 SELECT '1 day'::interval;
 SELECT '2016-01-01'::timestamptz + '3 months'::interval;
 ```
+<notes>
+When no proper Time Data Types are available, one convenient way of dealing with time is to use Unix Epoch time. This is the number of seconds since the start of the Unix Epoch (1979-01-01). We will see later that using Unix Epoch can be very handy when we start to look at PostGIS Linear Referencing.
+</notes>
 
+## Exercise: Convert between Time Data Types and Epoch Seconds
 ```sql
 SELECT to_timestamp(0);
 
@@ -100,7 +114,11 @@ SELECT extract(epoch from '2017-01-01'::timestamptz);
 
 SELECT extract(epoch from '1 hour'::interval);
 ```
+<notes>
+For convenience sake if you are doing this conversion frequently, PostgreSQL makes creating your own functions very easy. Let's create custom functions for converting Intervals and TimestampTZ into Epochs.
+</notes>
 
+## Exercise: Create custom functions for converting to Unix Epoch
 ```sql
 
 CREATE FUNCTION to_epoch(IN timestamptz, OUT float8) AS $$
@@ -115,18 +133,14 @@ SELECT to_epoch('2017-01-01'::timestamptz);
 SELECT to_epoch('1 hour'::interval);
 ```
 
-```sql
+<notes>
+It can be very convenient to also be able to "round" time.
+</notes>
 
+## Exercise: Truncate timestamps.
+```sql
 SELECT date_trunc('month', now());
-```
-
-```sql
-
-SELECT '4713-01-01 BC'::timestamptz;
-SELECT '4714-01-01 BC'::timestamptz;
-
-SELECT '294276-01-01'::timestamptz;
-SELECT '294277-01-01'::timestamptz;
+SELECT date_trunc('month', now()) + '1 month'::interval;
 ```
 
 ```sql
