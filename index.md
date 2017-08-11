@@ -25,7 +25,6 @@ The goal of this workshop is to walk through several examples of how to use 3rd 
 * https://www.postgresql.org/docs/9.6/static/functions-datetime.html
 * https://www.postgresql.org/docs/9.6/static/functions-formatting.html
 
-
 <notes>
 PostgreSQL has very extensive support for temporal data using the Timestamp, TimestampTZ, Date, Time, TimeTZ, and Interval data types. PostgreSQL is very forgiving as to how data can be input as plain text.
 
@@ -36,7 +35,6 @@ Further, while PostgreSQL is incredibly tolerant of text data input formats, ISO
 ---
 <img src="https://imgs.xkcd.com/comics/iso_8601.png" width='500px'></img>
 ---
-
 ### Exercise: Convert different text formats into timestamps
 
 ```sql
@@ -46,8 +44,6 @@ SELECT '2017-01-01'::timestamptz;
 
 SELECT '4/5/2017'::timestamptz;
 ```
----
-
 ---
 <notes>
 Day/month/year and month/day/year can be particularly problematic as they are each preferred in different parts of the world.
@@ -89,9 +85,7 @@ SELECT timezone('UTC', now());
 
 SELECT now() AT TIME ZONE 'America/Chicago';
 ```
-
 ---
-
 <notes>
 PostgreSQL also has an interval type that can maintain periods of time
 </notes>
@@ -106,6 +100,7 @@ When no proper Time Data Types are available, one convenient way of dealing with
 </notes>
 
 ## Exercise: Convert between Time Data Types and Epoch Seconds
+
 ```sql
 SELECT to_timestamp(0);
 
@@ -121,8 +116,8 @@ For convenience sake if you are doing this conversion frequently, PostgreSQL mak
 </notes>
 
 ## Exercise: Create custom functions for converting to Unix Epoch
-```sql
 
+```sql
 CREATE FUNCTION to_epoch(IN timestamptz, OUT float8) AS $$
     SELECT extract(epoch from $1);
 $$ LANGUAGE SQL;
@@ -140,20 +135,18 @@ It can be very convenient to also be able to "round" time.
 </notes>
 
 ## Exercise: Truncate timestamps.
+
 ```sql
 SELECT date_trunc('month', now());
 SELECT date_trunc('month', now()) + '1 month'::interval;
 ```
 
 ```sql
-
 SELECT st_dumppoints(geom) FROM superior100 limit 10;
 SELECT (st_dumppoints(geom)).* FROM superior100 limit 10;
 ```
 ---
-
 ```sql
-
 WITH t AS (SELECT st_dumppoints(geom) as dump FROM superior100)
 SELECT 
     (dump).path[1],
@@ -165,7 +158,6 @@ LIMIT 10;
 ```
 ---
 ```sql
-
 DROP TABLE IF EXISTS superior100_points;
 CREATE TABLE superior100_points AS 
 WITH t AS (SELECT st_dumppoints(geom) as dump FROM superior100)
@@ -178,25 +170,22 @@ FROM t;
 ```
 ---
 ```sql
-
 ALTER TABLE superior100_points ADD COLUMN z float8;
 
 UPDATE superior100_points 
 SET 
-    z=round(st_value(rast,geom)::numeric,1)
+    z=st_value(rast,geom)
 FROM dem 
 WHERE st_intersects(dem.rast,geom);
 ```
 ---
 ```sql
-
 SELECT st_asewkt(geom), x, y, z FROM superior100_points LIMIT 10;
 
 UPDATE superior100_points SET geom = st_setsrid(st_makepoint(x,y,z), 26915);
 ```
 ---
 ```sql
-
 SELECT st_asewkt(geom) FROM superior100_points LIMIT 10;
 
 WITH t AS (SELECT * FROM superior100_points ORDER BY PATH)
@@ -204,7 +193,6 @@ SELECT substring(st_asewkt(st_makeline(geom)),1,100) FROM t;
 ```
 ---
 ```sql
-
 CREATE TABLE superior1003d AS
 WITH t AS (SELECT * FROM superior100_points ORDER BY PATH)
 SELECT st_makeline(geom) as geom FROM t;
@@ -213,7 +201,6 @@ SELECT path, x, y, z, z-lag(z) OVER (ORDER BY PATH) FROM superior100_points LIMI
 ```
 ---
 ```sql
-
 ALTER TABLE superior100_points ADD COLUMN elchange float8;
 
 WITH t AS (SELECT path, x, y, z, round((z-lag(z) OVER (ORDER BY PATH))::numeric,1) elchange FROM superior100_points)
@@ -223,7 +210,6 @@ SELECT x, y, z, elchange FROM superior100_points limit 10;
 ```
 ---
 ```sql
-
 SELECT 
     3.28 * sum(elchange) FILTER (WHERE elchange>0) as gain, 
     3.28 * sum(elchange) FILTER (WHERE elchange<0) as descent 
@@ -231,21 +217,16 @@ FROM superior100_points;
 ```
 ---
 ```sql
-
 SELECT path, x, y, z, degrees(st_azimuth(lag(geom) OVER (ORDER BY path), geom)) FROM superior100_points LIMIT 20;
 ```
 ---
 ```sql
-
-
 SELECT st_length(geom)/1609 FROM superior100;
 SELECT st_length(geom)/1609 FROM superior1003d;
 SELECT st_3dlength(geom)/1609 FROM superior1003d;
 ```
 ---
 ```sql
-
-
 SELECT st_asewkt(st_lineinterpolatepoint(geom,.5)) FROM superior1003d;
 SELECT st_asewkt(st_lineinterpolatepoint(geom,50*1609/st_length(geom))) FROM superior1003d;
 ```
@@ -288,7 +269,6 @@ SELECT aidstation, miles, substring(st_asewkt(geom),0,100) FROM sections;
 ```
 ---
 ```sql
-
 CREATE TABLE superior1003dm AS 
 SELECT st_linemerge(st_collect(geom)) AS geom FROM sections;
 
@@ -296,7 +276,6 @@ SELECT substring(st_asewkt(geom),0,100) FROM superior1003dm;
 ```
 ---
 ```sql
-
 DROP TABLE superior1003dm;
 CREATE TABLE superior1003dm AS 
 WITH 
@@ -310,7 +289,6 @@ SELECT substring(st_asewkt(geom),0,100) FROM superior1003dm;
 ```
 ---
 ```sql
-
 SELECT * FROM superiorsplits ORDER BY runnerid, aidstation LIMIT 20;
 
 SELECT aidstation, min(split), avg(split), max(split) 
@@ -351,12 +329,10 @@ FROM
 ```
 ---
 ```sql
-
 SELECT * FROM bitner_goal;
 ```
 ---
 ```sql
-
 CREATE TABLE bitner_goal_track AS
 WITH
 t1 AS (
@@ -439,5 +415,4 @@ SELECT st_distancecpa(
     (SELECT st_linesubstring(geom,.5,1) FROM bitner_goal_track),
     (SELECT st_linesubstring(geom,.5,1) FROM target_goal_track)
 );
-
 ```
