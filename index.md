@@ -7,6 +7,7 @@
 ---
 ### David Bitner dbitner@boundlessgeo.com
 Senior Development Engineer - Boundless Spatial
+<br></br>
 <img src='https://boundlessgeo.com/wp-content/themes/boundlessgeo/assets/images/BoundlessLogoTag.svg' width='400px'></img>
 
 ---
