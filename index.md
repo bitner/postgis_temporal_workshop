@@ -1,14 +1,26 @@
 # Breaking the 4th dimension: working with time in PostgreSQL and PostGIS
+
 ---
-<img src="https://pbs.twimg.com/profile_images/779351896817602562/YXf-qdul.jpg" width="100%"></img>
+
+<img src="https://pbs.twimg.com/profile_images/779351896817602562/YXf-qdul.jpg" width="650px"></img>
 
 ---
 ### David Bitner dbitner@boundlessgeo.com
-Senior Development Engineer - Boundless Spatial ![](https://boundlessgeo.com/wp-content/themes/boundlessgeo/assets/images/BoundlessLogoTag.svg)
+Senior Development Engineer - Boundless Spatial
+<img src='https://boundlessgeo.com/wp-content/themes/boundlessgeo/assets/images/BoundlessLogoTag.svg'></img>
+
 ---
+
 The goal of this workshop is to walk through several examples of how to use 3rd and 4th dimension data with PostgreSQL and PostGIS with a particular emphasis on using M values with points and linestrings.
+
 ---
-<notes>PostgreSQL has very extensive support for temporal data using the Timestamp, TimestampTZ, Date, Time, TimeTZ, and Interval data types. PostgreSQL is very forgiving as to how data can be input as plain text.</notes>
+# Agenda
+* Time Basics
+* Elevation, Points<->Lines
+* Tracks
+---
+
+PostgreSQL has very extensive support for temporal data using the Timestamp, TimestampTZ, Date, Time, TimeTZ, and Interval data types. PostgreSQL is very forgiving as to how data can be input as plain text.
 
 It should be noted that in almost all cases it is better to use the Time Zone aware TimestampTZ and TimeTZ data types as the non timezone aware Timestamp and Time can be lossy and ambiguous in most circumstances. 
 
