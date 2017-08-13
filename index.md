@@ -27,8 +27,8 @@ I have a bad habit of entering events where you go to really pretty places to ru
 ```bash
 createdb superior
 export PGDATABASE=superior
-psql -c "CREATE EXTENSION postgis;"
-psql -c "SELECT postgis_full_version();"
+psql -c "CREATE EXTENSION postgis;" superior
+psql -c "SELECT postgis_full_version();" superior
 ```
 ---
 ## PostgreSQL Date / Time Datatypes and Functions
@@ -130,11 +130,11 @@ For convenience sake if you are doing this conversion frequently, PostgreSQL mak
 ## Exercise: Create custom functions for converting to Unix Epoch
 
 ```sql
-CREATE FUNCTION to_epoch(IN timestamptz, OUT float8) AS $$
+CREATE OR REPLACE FUNCTION to_epoch(IN timestamptz, OUT float8) AS $$
     SELECT extract(epoch from $1);
 $$ LANGUAGE SQL;
 
-CREATE FUNCTION to_epoch(IN interval, OUT float8) AS $$
+CREATE OR REPLACE FUNCTION to_epoch(IN interval, OUT float8) AS $$
     SELECT extract(epoch from $1);
 $$ LANGUAGE SQL;
 
@@ -155,10 +155,10 @@ SELECT date_trunc('month', now()) + '1 month'::interval;
 ---
 ## Exercise: Load Superior 100 Race Course
 ```bash
-shp2pgsql -I -s 26915 -D superior100.shp superior100 | psql
+shp2pgsql -I -s 26915 -D -t 2D superior100.shp superior100 | psql superior
 ```
 ```sql
-SELECT * FROM superior100;
+SELECT id, substring(st_asewkt(geom),0,100) FROM superior100;
 ```
 ---
 Let's take a look at this track by blowing it up into the component points. [ST_DumpPoints](https://postgis.net/docs/ST_DumpPoints.html) is a Set Returning Function that returns a record data type. In order to access the columns in the record, you'll notice that we must wrap the column that contains the record in parentheses.
@@ -173,7 +173,7 @@ SELECT (st_dumppoints(geom)).* FROM superior100 limit 10;
 ```sql
 WITH t AS (SELECT st_dumppoints(geom) as dump FROM superior100)
 SELECT 
-    (dump).path[1],
+    (dump).path[2],
     st_asewkt((dump).geom), 
     st_x((dump).geom), 
     st_y((dump).geom)
@@ -186,7 +186,7 @@ LIMIT 10;
 CREATE TABLE superior100_points AS 
 WITH t AS (SELECT st_dumppoints(geom) as dump FROM superior100)
 SELECT 
-    (dump).path[1],
+    (dump).path[2],
     (dump).geom, 
     st_x((dump).geom) as x, 
     st_y((dump).geom) as y
@@ -196,7 +196,7 @@ FROM t;
 ## Exercise Add an elevation to our table of track points
 Load a dem into PostGIS Raster
 ```bash
-raster2pgsql -I -Y -C -s 26915 -t 100x100 sht_dem25m.tif dem | psql
+raster2pgsql -I -Y -C -s 26915 -t 100x100 sht_dem25m.tif dem | psql superior
 ```
 Use [st_value](https://postgis.net/docs/RT_ST_Value.html) to assign the elevation for each point.
 ```sql
@@ -284,7 +284,7 @@ SELECT st_length(geom)/1609 FROM superior1003d;
 SELECT st_3dlength(geom)/1609 FROM superior1003d;
 ```
 ---
-# [Linear Referncing](https://postgis.net/docs/reference.html#Linear_Referencing)
+# [Linear Referencing](https://postgis.net/docs/reference.html#Linear_Referencing)
 
 PostGIS comes with a great set of tools for doing interpolation along tracks. These tools either use the ration along the track (from 0-1) or they use a 4th ordinate as a measure, referred to as the M ordinate.
 
@@ -305,7 +305,7 @@ Geographic data collection is not always entirely precise (shocker). The officia
 ---
 ## Exercise: Load aid station locations
 ```bash
-shp2pgsql -s 26915 -D -I aidstations.shp aidstations | psql
+shp2pgsql -s 26915 -D -I aidstations.shp aidstations | psql superior
 ```
 ---
 ## Exercise: Look at aid station locations as ratios along the track by using both the mileage along as a ratio of total distance and by the aid station location
@@ -388,7 +388,7 @@ Why did we have to use the "DISTINCT ON"? For each segment when we constructed t
 We've now learned how to use our M ordinate to store information about distance information, but we all came here to learn how we can work with time and PostGIS. I've found the last three years splits for the race for each aid station. We can use this data to start to develop a pace chart for where I can hope to run. Let's load this split data (to save time we are just going to use a sql script to load and format the data for us to use)
 
 ```bash
-psql -a -f loadresults.sql
+psql -a -f loadresults.sql superior
 ```
 ---
 ## Exercise: Explore our splits data
@@ -474,9 +474,15 @@ I have a satellite tracker that I carry with on these races that every ten minut
 ## Exercise: Find where I should be at given a location
 ```sql
 WITH point AS 
-(SELECT st_locatealong(geom,60) as point FROM superior3dm)
-SELECT (st_m(st_linelocatepoint(geom,point.point))::text || ' seconds')::interval
-FROM bitner_goal_track;
+(SELECT st_geometryn(st_locatealong(geom,60),1) as point FROM superior1003dm)
+SELECT 
+        (st_m(
+            st_lineinterpolatepoint(
+                geom,
+                st_linelocatepoint(geom,point.point)
+            )
+        )::text || ' seconds')::interval
+FROM bitner_goal_track, point;
 ```
 ---
 

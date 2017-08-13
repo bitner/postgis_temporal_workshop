@@ -1,0 +1,889 @@
+CREATE EXTENSION
+                                                                           postgis_full_version                                                                            
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ POSTGIS="2.3.2 r15302" GEOS="3.5.1-CAPI-1.9.1 r4246" PROJ="Rel. 4.9.2, 08 September 2015" GDAL="GDAL 1.11.3, released 2015/09/16" LIBXML="2.9.3" LIBJSON="0.11.99" RASTER
+(1 row)
+
+SET
+SET
+BEGIN
+CREATE TABLE
+ALTER TABLE
+                        addgeometrycolumn                        
+-----------------------------------------------------------------
+ public.superior100.geom SRID:26915 TYPE:MULTILINESTRING DIMS:2 
+(1 row)
+
+COPY 1
+CREATE INDEX
+COMMIT
+ANALYZE
+BEGIN
+CREATE TABLE
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 11
+COPY 3
+CREATE INDEX
+ANALYZE
+ addrasterconstraints 
+----------------------
+ t
+(1 row)
+
+COMMIT
+SET
+SET
+BEGIN
+CREATE TABLE
+ALTER TABLE
+                   addgeometrycolumn                   
+-------------------------------------------------------
+ public.aidstations.geom SRID:26915 TYPE:POINT DIMS:4 
+(1 row)
+
+COPY 15
+CREATE INDEX
+COMMIT
+ANALYZE
+CREATE TABLE superiorresults (
+	year int4, 
+	bib int4, 
+	first text, 
+	last text, 
+	sex text, 
+	age int4, 
+	city text, 
+	state text, 
+	country text, 
+	splitrock interval, 
+	beaverbay interval, 
+	silverbay interval, 
+	tettegouche interval, 
+	cr6 interval, 
+	finland interval, 
+	crosby interval, 
+	sugarloaf interval, 
+	cramer interval, 
+	temperance interval, 
+	sawbill interval, 
+	oberg interval, 
+	finish interval
+);
+CREATE TABLE
+\copy superiorresults from 'superiorresults.csv' with csv header;
+COPY 639
+create sequence superiorresults_id_seq;
+CREATE SEQUENCE
+alter table superiorresults add column id int8 primary key default nextval('superiorresults_id_seq'::regclass);
+ALTER TABLE
+CREATE TABLE superiorsplits AS
+WITH allsplits AS
+	(SELECT id as runnerid, splitrock as split, 'splitrock' as aidstation FROM superiorresults WHERE splitrock < beaverbay
+	UNION ALL
+	SELECT id, beaverbay, 'beaverbay' FROM superiorresults WHERE beaverbay BETWEEN splitrock AND silverbay
+	UNION ALL
+	SELECT id, silverbay, 'silverbay' FROM superiorresults WHERE silverbay BETWEEN beaverbay AND tettegouche
+	UNION ALL
+	SELECT id, tettegouche, 'tettegouche' FROM superiorresults WHERE tettegouche BETWEEN silverbay and cr6
+	UNION ALL
+	SELECT id, cr6, 'cr6' FROM superiorresults WHERE cr6 BETWEEN tettegouche AND finland
+	UNION ALL
+	SELECT id, finland, 'finland' FROM superiorresults WHERE finland BETWEEN cr6 AND crosby
+	UNION ALL
+	SELECT id, crosby, 'crosby' FROM superiorresults WHERE crosby BETWEEN finland AND sugarloaf
+	UNION ALL
+	SELECT id, sugarloaf, 'sugarloaf' FROM superiorresults WHERE sugarloaf BETWEEN crosby AND cramer
+	UNION ALL
+	SELECT id, cramer, 'cramer' FROM superiorresults WHERE cramer BETWEEN sugarloaf AND temperance
+	UNION ALL
+	SELECT id, temperance, 'temperance' FROM superiorresults WHERE temperance BETWEEN cramer AND sawbill
+	UNION ALL
+	SELECT id, sawbill, 'sawbill' FROM superiorresults WHERE sawbill BETWEEN temperance AND oberg
+	UNION ALL
+	SELECT id, oberg, 'oberg' FROM superiorresults WHERE oberg BETWEEN sawbill AND finish
+	UNION ALL
+	SELECT id, finish, 'finish' FROM superiorresults WHERE finish > oberg
+	)
+	SELECT *, (SELECT finish FROM superiorresults WHERE id=allsplits.runnerid) as finish from allsplits WHERE split IS NOT NULL
+;
+SELECT 6358
+SELECT '2017-01-01 00:00-6'::timestamptz;
+      timestamptz       
+------------------------
+ 2017-01-01 00:00:00-06
+(1 row)
+
+SELECT '2017-01-01'::timestamptz;
+      timestamptz       
+------------------------
+ 2017-01-01 00:00:00-06
+(1 row)
+
+SELECT '4/5/2017'::timestamptz;
+      timestamptz       
+------------------------
+ 2017-04-05 00:00:00-05
+(1 row)
+
+SET datestyle to dmy;
+SET
+SELECT '4/5/2017'::timestamptz;
+      timestamptz       
+------------------------
+ 2017-05-04 00:00:00-05
+(1 row)
+
+SET datestyle TO DEFAULT;
+SET
+SELECT '4/5/2017'::timestamptz;
+      timestamptz       
+------------------------
+ 2017-04-05 00:00:00-05
+(1 row)
+
+SELECT now();
+              now              
+-------------------------------
+ 2017-08-13 10:24:58.159698-05
+(1 row)
+
+SET TIME ZONE 'Europe/Rome';
+SET
+SELECT now();
+              now              
+-------------------------------
+ 2017-08-13 17:24:58.160176+02
+(1 row)
+
+SET TIME ZONE 'UTC';
+SET
+SELECT now();
+              now              
+-------------------------------
+ 2017-08-13 15:24:58.160396+00
+(1 row)
+
+SET TIME ZONE 'PST8PDT';
+SET
+SELECT now();
+              now              
+-------------------------------
+ 2017-08-13 08:24:58.160754-07
+(1 row)
+
+SET TIME ZONE DEFAULT;
+SET
+SHOW TIME ZONE;
+ TimeZone  
+-----------
+ localtime
+(1 row)
+
+SELECT now();
+              now              
+-------------------------------
+ 2017-08-13 10:24:58.160963-05
+(1 row)
+
+SELECT timezone('UTC', now());
+          timezone          
+----------------------------
+ 2017-08-13 15:24:58.161047
+(1 row)
+
+SELECT now() AT TIME ZONE 'America/Chicago';
+          timezone          
+----------------------------
+ 2017-08-13 10:24:58.161274
+(1 row)
+
+SELECT '1 day'::interval;
+ interval 
+----------
+ 1 day
+(1 row)
+
+SELECT '2016-01-01'::timestamptz + '3 months'::interval;
+        ?column?        
+------------------------
+ 2016-04-01 00:00:00-05
+(1 row)
+
+SELECT to_timestamp(0);
+      to_timestamp      
+------------------------
+ 1969-12-31 18:00:00-06
+(1 row)
+
+SELECT timezone('UTC',to_timestamp(0));
+      timezone       
+---------------------
+ 1970-01-01 00:00:00
+(1 row)
+
+SELECT extract(epoch from '2017-01-01'::timestamptz);
+ date_part  
+------------
+ 1483250400
+(1 row)
+
+SELECT extract(epoch from '1 hour'::interval);
+ date_part 
+-----------
+      3600
+(1 row)
+
+CREATE OR REPLACE FUNCTION to_epoch(IN timestamptz, OUT float8) AS $$
+    SELECT extract(epoch from $1);
+$$ LANGUAGE SQL;
+CREATE FUNCTION
+CREATE OR REPLACE FUNCTION to_epoch(IN interval, OUT float8) AS $$
+    SELECT extract(epoch from $1);
+$$ LANGUAGE SQL;
+CREATE FUNCTION
+SELECT to_epoch('2017-01-01'::timestamptz);
+  to_epoch  
+------------
+ 1483250400
+(1 row)
+
+SELECT to_epoch('1 hour'::interval);
+ to_epoch 
+----------
+     3600
+(1 row)
+
+SELECT date_trunc('month', now());
+       date_trunc       
+------------------------
+ 2017-08-01 00:00:00-05
+(1 row)
+
+SELECT date_trunc('month', now()) + '1 month'::interval;
+        ?column?        
+------------------------
+ 2017-09-01 00:00:00-05
+(1 row)
+
+SELECT id, substring(st_asewkt(geom),0,100) FROM superior100;
+ id |                                              substring                                              
+----+-----------------------------------------------------------------------------------------------------
+    | SRID=26915;MULTILINESTRING((616037 5221994,616037 5221999,616040 5222023,616043 5222048,616045 5222
+(1 row)
+
+SELECT st_dumppoints(geom) FROM superior100 limit 10;
+                         st_dumppoints                         
+---------------------------------------------------------------
+ ("{1,1}",01010000202369000000000000CACC2241000000809AEB5341)
+ ("{1,2}",01010000202369000000000000CACC2241000000C09BEB5341)
+ ("{1,3}",01010000202369000000000000D0CC2241000000C0A1EB5341)
+ ("{1,4}",01010000202369000000000000D6CC224100000000A8EB5341)
+ ("{1,5}",01010000202369000000000000DACC224100000040AEEB5341)
+ ("{1,6}",01010000202369000000000000E0CC224100000080B4EB5341)
+ ("{1,7}",01010000202369000000000000E8CC224100000080B5EB5341)
+ ("{1,8}",0101000020236900000000000008CD224100000080BAEB5341)
+ ("{1,9}",0101000020236900000000000028CD224100000040BFEB5341)
+ ("{1,10}",0101000020236900000000000048CD224100000000C4EB5341)
+(10 rows)
+
+SELECT (st_dumppoints(geom)).* FROM superior100 limit 10;
+  path  |                        geom                        
+--------+----------------------------------------------------
+ {1,1}  | 01010000202369000000000000CACC2241000000809AEB5341
+ {1,2}  | 01010000202369000000000000CACC2241000000C09BEB5341
+ {1,3}  | 01010000202369000000000000D0CC2241000000C0A1EB5341
+ {1,4}  | 01010000202369000000000000D6CC224100000000A8EB5341
+ {1,5}  | 01010000202369000000000000DACC224100000040AEEB5341
+ {1,6}  | 01010000202369000000000000E0CC224100000080B4EB5341
+ {1,7}  | 01010000202369000000000000E8CC224100000080B5EB5341
+ {1,8}  | 0101000020236900000000000008CD224100000080BAEB5341
+ {1,9}  | 0101000020236900000000000028CD224100000040BFEB5341
+ {1,10} | 0101000020236900000000000048CD224100000000C4EB5341
+(10 rows)
+
+WITH t AS (SELECT st_dumppoints(geom) as dump FROM superior100)
+SELECT 
+    (dump).path[2],
+    st_asewkt((dump).geom), 
+    st_x((dump).geom), 
+    st_y((dump).geom)
+FROM t 
+LIMIT 10;
+ path |            st_asewkt             |  st_x  |  st_y   
+------+----------------------------------+--------+---------
+    1 | SRID=26915;POINT(616037 5221994) | 616037 | 5221994
+    2 | SRID=26915;POINT(616037 5221999) | 616037 | 5221999
+    3 | SRID=26915;POINT(616040 5222023) | 616040 | 5222023
+    4 | SRID=26915;POINT(616043 5222048) | 616043 | 5222048
+    5 | SRID=26915;POINT(616045 5222073) | 616045 | 5222073
+    6 | SRID=26915;POINT(616048 5222098) | 616048 | 5222098
+    7 | SRID=26915;POINT(616052 5222102) | 616052 | 5222102
+    8 | SRID=26915;POINT(616068 5222122) | 616068 | 5222122
+    9 | SRID=26915;POINT(616084 5222141) | 616084 | 5222141
+   10 | SRID=26915;POINT(616100 5222160) | 616100 | 5222160
+(10 rows)
+
+CREATE TABLE superior100_points AS 
+WITH t AS (SELECT st_dumppoints(geom) as dump FROM superior100)
+SELECT 
+    (dump).path[2],
+    (dump).geom, 
+    st_x((dump).geom) as x, 
+    st_y((dump).geom) as y
+FROM t;
+SELECT 7706
+ALTER TABLE superior100_points ADD COLUMN z float8;
+ALTER TABLE
+UPDATE superior100_points 
+SET 
+    z=st_value(rast,geom)
+FROM dem 
+WHERE st_intersects(dem.rast,geom);
+UPDATE 7706
+SELECT st_asewkt(geom), x, y, z FROM superior100_points LIMIT 10;
+            st_asewkt             |   x    |    y    |        z         
+----------------------------------+--------+---------+------------------
+ SRID=26915;POINT(616037 5221994) | 616037 | 5221994 | 211.970001220703
+ SRID=26915;POINT(616037 5221999) | 616037 | 5221999 | 211.970001220703
+ SRID=26915;POINT(616040 5222023) | 616040 | 5222023 |           212.25
+ SRID=26915;POINT(616043 5222048) | 616043 | 5222048 | 212.660003662109
+ SRID=26915;POINT(616045 5222073) | 616045 | 5222073 | 213.889999389648
+ SRID=26915;POINT(616048 5222098) | 616048 | 5222098 | 217.649993896484
+ SRID=26915;POINT(616052 5222102) | 616052 | 5222102 | 217.649993896484
+ SRID=26915;POINT(616068 5222122) | 616068 | 5222122 | 219.119995117188
+ SRID=26915;POINT(616084 5222141) | 616084 | 5222141 | 219.119995117188
+ SRID=26915;POINT(616100 5222160) | 616100 | 5222160 | 220.610000610352
+(10 rows)
+
+UPDATE superior100_points SET geom = st_setsrid(st_makepoint(x,y,z), 26915);
+UPDATE 7706
+SELECT st_asewkt(geom) FROM superior100_points LIMIT 10;
+                     st_asewkt                     
+---------------------------------------------------
+ SRID=26915;POINT(616037 5221994 211.970001220703)
+ SRID=26915;POINT(616037 5221999 211.970001220703)
+ SRID=26915;POINT(616040 5222023 212.25)
+ SRID=26915;POINT(616043 5222048 212.660003662109)
+ SRID=26915;POINT(616045 5222073 213.889999389648)
+ SRID=26915;POINT(616048 5222098 217.649993896484)
+ SRID=26915;POINT(616052 5222102 217.649993896484)
+ SRID=26915;POINT(616068 5222122 219.119995117188)
+ SRID=26915;POINT(616084 5222141 219.119995117188)
+ SRID=26915;POINT(616100 5222160 220.610000610352)
+(10 rows)
+
+WITH t AS (SELECT * FROM superior100_points ORDER BY PATH)
+SELECT substring(st_asewkt(st_makeline(geom)),1,100) FROM t;
+                                              substring                                               
+------------------------------------------------------------------------------------------------------
+ SRID=26915;LINESTRING(616037 5221994 211.970001220703,616037 5221999 211.970001220703,616040 5222023
+(1 row)
+
+CREATE TABLE superior1003d AS
+WITH t AS (SELECT * FROM superior100_points ORDER BY PATH)
+SELECT st_makeline(geom) as geom FROM t;
+SELECT 1
+SELECT path, x, y, z, z-lag(z) OVER (ORDER BY PATH) FROM superior100_points LIMIT 20;
+ path |   x    |    y    |        z         |      ?column?      
+------+--------+---------+------------------+--------------------
+    1 | 616037 | 5221994 | 211.970001220703 |                   
+    2 | 616037 | 5221999 | 211.970001220703 |                  0
+    3 | 616040 | 5222023 |           212.25 |  0.279998779296875
+    4 | 616043 | 5222048 | 212.660003662109 |  0.410003662109375
+    5 | 616045 | 5222073 | 213.889999389648 |   1.22999572753906
+    6 | 616048 | 5222098 | 217.649993896484 |   3.75999450683594
+    7 | 616052 | 5222102 | 217.649993896484 |                  0
+    8 | 616068 | 5222122 | 219.119995117188 |   1.47000122070312
+    9 | 616084 | 5222141 | 219.119995117188 |                  0
+   10 | 616100 | 5222160 | 220.610000610352 |   1.49000549316406
+   11 | 616116 | 5222179 | 216.899993896484 |  -3.71000671386719
+   12 | 616109 | 5222192 | 223.210006713867 |   6.31001281738281
+   13 | 616098 | 5222214 | 223.210006713867 |                  0
+   14 | 616101 | 5222224 | 218.929992675781 |  -4.28001403808594
+   15 | 616120 | 5222240 | 211.449996948242 |  -7.47999572753906
+   16 | 616139 | 5222256 |           224.25 |   12.8000030517578
+   17 | 616147 | 5222241 | 212.020004272461 |  -12.2299957275391
+   18 | 616162 | 5222244 |           224.25 |   12.2299957275391
+   19 | 616186 | 5222250 | 228.119995117188 |    3.8699951171875
+   20 | 616203 | 5222266 | 227.240005493164 | -0.879989624023438
+(20 rows)
+
+ALTER TABLE superior100_points ADD COLUMN elchange float8;
+ALTER TABLE
+WITH t AS (SELECT path, x, y, z, round((z-lag(z) OVER (ORDER BY PATH))::numeric,1) elchange FROM superior100_points)
+UPDATE superior100_points p SET elchange=t.elchange FROM t WHERE p.path=t.path;
+UPDATE 7706
+SELECT x, y, z, elchange FROM superior100_points limit 10;
+   x    |    y    |        z         | elchange 
+--------+---------+------------------+----------
+ 616037 | 5221994 | 211.970001220703 |         
+ 616037 | 5221999 | 211.970001220703 |        0
+ 616040 | 5222023 |           212.25 |      0.3
+ 616043 | 5222048 | 212.660003662109 |      0.4
+ 616045 | 5222073 | 213.889999389648 |      1.2
+ 616048 | 5222098 | 217.649993896484 |      3.8
+ 616052 | 5222102 | 217.649993896484 |        0
+ 616068 | 5222122 | 219.119995117188 |      1.5
+ 616084 | 5222141 | 219.119995117188 |        0
+ 616100 | 5222160 | 220.610000610352 |      1.5
+(10 rows)
+
+SELECT 
+    3.28 * sum(elchange) FILTER (WHERE elchange>0) as gain, 
+    3.28 * sum(elchange) FILTER (WHERE elchange<0) as descent 
+FROM superior100_points;
+       gain       |  descent   
+------------------+------------
+ 24922.7520000001 | -24452.072
+(1 row)
+
+SELECT path, x, y, z, degrees(st_azimuth(lag(geom) OVER (ORDER BY path), geom)) FROM superior100_points LIMIT 20;
+ path |   x    |    y    |        z         |     degrees      
+------+--------+---------+------------------+------------------
+    1 | 616037 | 5221994 | 211.970001220703 |                 
+    2 | 616037 | 5221999 | 211.970001220703 |                0
+    3 | 616040 | 5222023 |           212.25 |  7.1250163489018
+    4 | 616043 | 5222048 | 212.660003662109 | 6.84277341263094
+    5 | 616045 | 5222073 | 213.889999389648 | 4.57392125990086
+    6 | 616048 | 5222098 | 217.649993896484 | 6.84277341263094
+    7 | 616052 | 5222102 | 217.649993896484 |               45
+    8 | 616068 | 5222122 | 219.119995117188 | 38.6598082540901
+    9 | 616084 | 5222141 | 219.119995117188 | 40.1009075462122
+   10 | 616100 | 5222160 | 220.610000610352 | 40.1009075462122
+   11 | 616116 | 5222179 | 216.899993896484 | 40.1009075462122
+   12 | 616109 | 5222192 | 223.210006713867 | 331.699244233994
+   13 | 616098 | 5222214 | 223.210006713867 | 333.434948822922
+   14 | 616101 | 5222224 | 218.929992675781 | 16.6992442339936
+   15 | 616120 | 5222240 | 211.449996948242 | 49.8990924537878
+   16 | 616139 | 5222256 |           224.25 | 49.8990924537878
+   17 | 616147 | 5222241 | 212.020004272461 | 151.927513064147
+   18 | 616162 | 5222244 |           224.25 | 78.6900675259798
+   19 | 616186 | 5222250 | 228.119995117188 | 75.9637565320735
+   20 | 616203 | 5222266 | 227.240005493164 | 46.7357045889284
+(20 rows)
+
+SELECT st_length(geom)/1609 FROM superior1003d;
+     ?column?     
+------------------
+ 99.9703141773914
+(1 row)
+
+SELECT st_3dlength(geom)/1609 FROM superior1003d;
+     ?column?     
+------------------
+ 101.114767684496
+(1 row)
+
+SELECT st_asewkt(st_lineinterpolatepoint(geom,.5)) FROM superior1003d;
+                         st_asewkt                          
+------------------------------------------------------------
+ SRID=26915;POINT(634236 5255874.43108546 471.070007324219)
+(1 row)
+
+SELECT st_asewkt(st_lineinterpolatepoint(geom,50*1609/st_length(geom))) FROM superior1003d;
+                         st_asewkt                          
+------------------------------------------------------------
+ SRID=26915;POINT(634236 5255898.31332975 472.203611857971)
+(1 row)
+
+SELECT
+    a.aidstation,
+    a.miles,
+    a.miles/st_length(s.geom)*1609 as along_track,
+    a.miles/103.2 along_total_distance,
+    st_linelocatepoint(s.geom,a.geom) at_nearest_point
+FROM
+    aidstations a,
+    superior1003d s
+ORDER BY a.miles
+;
+ aidstation  | miles |    along_track     | along_total_distance |  at_nearest_point  
+-------------+-------+--------------------+----------------------+--------------------
+ start       |     0 |                  0 |                    0 |                  0
+ splitrock   |   9.7 | 0.0970288037985749 |   0.0939922480620155 | 0.0884339602695875
+ beaverbay   |    20 |  0.200059389275412 |    0.193798449612403 |  0.190039174775857
+ silverbay   |  24.9 |  0.249073939647888 |    0.241279069767442 |   0.23615202371927
+ tettegouche |  34.8 |  0.348103337339217 |    0.337209302325581 |   0.32661383421069
+ cr6         |  43.4 |  0.434128874727644 |    0.420542635658915 |  0.411704544677768
+ finland     |  51.1 |  0.511151739598678 |     0.49515503875969 |  0.486143768586655
+ sonju       |  58.6 |  0.586174010576958 |    0.567829457364341 |  0.562076220731827
+ crosby      |  62.8 |  0.628186482324794 |    0.608527131782946 |  0.602721497294969
+ sugarloaf   |  72.2 |  0.722214395284238 |    0.699612403100775 |  0.698552417757572
+ cramer      |  77.8 |  0.778231024281353 |    0.753875968992248 |  0.752054022915056
+ temperance  |  84.9 |  0.849252107474124 |    0.822674418604651 |  0.821037717962419
+ sawbill     |  90.6 |  0.906269033417617 |    0.877906976744186 |  0.873870577694405
+ oberg       |  96.1 |  0.961285365468355 |    0.931201550387597 |  0.928819720772351
+ finish      | 103.2 |   1.03230644866113 |                    1 |                  1
+(15 rows)
+
+CREATE TABLE sections AS
+SELECT 
+    aidstation,
+    miles,
+    st_addmeasure(
+        st_linesubstring(
+            s.geom,
+            st_linelocatepoint(s.geom,lag(a.geom) OVER (ORDER BY miles)),
+            st_linelocatepoint(s.geom,a.geom)
+        ),
+        lag(a.miles) OVER (ORDER BY miles),
+        a.miles
+    ) as geom
+FROM
+    aidstations a,
+    superior1003d s
+ORDER BY a.miles  
+;
+SELECT 15
+SELECT aidstation, miles, substring(st_asewkt(geom),0,100) FROM sections;
+ aidstation  | miles |                                              substring                                              
+-------------+-------+-----------------------------------------------------------------------------------------------------
+ start       |     0 | 
+ splitrock   |   9.7 | SRID=26915;LINESTRING(616037 5221994 211.970001220703 0,616037 5221999 211.970001220703 0.003409538
+ beaverbay   |    20 | SRID=26915;LINESTRING(620962 5227202 208.330001831055 9.7,620972 5227225 210.020004272461 9.7158059
+ silverbay   |  24.9 | SRID=26915;LINESTRING(627886.980534602 5236115.86174252 283.254262283495 20,627889 5236118 283.3599
+ tettegouche |  34.8 | SRID=26915;LINESTRING(628642 5239000 337.720001220703 24.9,628638 5239020 338.670013427734 24.91387
+ cr6         |  43.4 | SRID=26915;LINESTRING(634717.011587533 5245410.68211671 310.410115487287 34.8,634724 5245420 310.48
+ finland     |  51.1 | SRID=26915;LINESTRING(639229 5252553 355.790008544922 43.4,639227 5252566 355.549987792969 43.40845
+ sonju       |  58.6 | SRID=26915;LINESTRING(633523 5254264 401.119995117188 51.1,633523 5254266 401.119995117188 51.10122
+ crosby      |  62.8 | SRID=26915;LINESTRING(637258 5260468 471.75 58.6,637251 5260454 471 58.6100553026911,637239 5260431
+ sugarloaf   |  72.2 | SRID=26915;LINESTRING(642205.931929514 5260077.3150877 443.161481674377 62.8,642221 5260078 442.230
+ cramer      |  77.8 | SRID=26915;LINESTRING(650793 5262452 337.029998779297 72.2,650793 5262452 337.029998779297 72.2,650
+ temperance  |  84.9 | SRID=26915;LINESTRING(652178.41050353 5267208.11575529 390.349999618797 77.8,652179 5267209 390.309
+ sawbill     |  90.6 | SRID=26915;LINESTRING(659127.481664561 5270058.90366709 256.362463282696 84.9,659152 5270054 254.96
+ oberg       |  96.1 | SRID=26915;LINESTRING(660721.992527336 5273874.08967197 369.073336019578 90.6,660721 5273886 368.19
+ finish      | 103.2 | SRID=26915;LINESTRING(666427.457118748 5277351.23603533 372.650583456592 96.1,666428 5277351 372.60
+(15 rows)
+
+CREATE TABLE superior1003dm AS 
+SELECT st_linemerge(st_collect(geom)) AS geom FROM sections;
+SELECT 1
+SELECT substring(st_asewkt(geom),0,100) FROM superior1003dm;
+                                              substring                                              
+-----------------------------------------------------------------------------------------------------
+ SRID=26915;LINESTRING(616037 5221994 211.970001220703,616037 5221999 211.970001220703,616040 522202
+(1 row)
+
+DROP TABLE superior1003dm;
+DROP TABLE
+CREATE TABLE superior1003dm AS 
+WITH 
+p1 AS 
+    (SELECT (st_dumppoints(geom)).* FROM sections),
+p2 AS
+    (SELECT DISTINCT ON (st_m(geom)) geom, st_m(geom) FROM p1 ORDER BY st_m(geom))
+SELECT st_makeline(geom) as geom FROM p2;
+SELECT 1
+SELECT substring(st_asewkt(geom),0,100) FROM superior1003dm;
+                                              substring                                              
+-----------------------------------------------------------------------------------------------------
+ SRID=26915;LINESTRING(616037 5221994 211.970001220703 0,616037 5221999 211.970001220703 0.003409538
+(1 row)
+
+SELECT * FROM superiorsplits ORDER BY runnerid, aidstation LIMIT 20;
+ runnerid |  split   | aidstation  |  finish  
+----------+----------+-------------+----------
+        1 | 03:22:00 | beaverbay   | 21:58:32
+        1 | 08:10:00 | cr6         | 21:58:32
+        1 | 16:12:00 | cramer      | 21:58:32
+        1 | 12:17:00 | crosby      | 21:58:32
+        1 | 21:58:32 | finish      | 21:58:32
+        1 | 09:44:00 | finland     | 21:58:32
+        1 | 20:20:00 | oberg       | 21:58:32
+        1 | 19:06:00 | sawbill     | 21:58:32
+        1 | 04:18:00 | silverbay   | 21:58:32
+        1 | 01:36:00 | splitrock   | 21:58:32
+        1 | 14:47:00 | sugarloaf   | 21:58:32
+        1 | 17:56:00 | temperance  | 21:58:32
+        1 | 06:12:00 | tettegouche | 21:58:32
+        2 | 03:14:00 | beaverbay   | 22:52:28
+        2 | 07:58:00 | cr6         | 22:52:28
+        2 | 16:10:00 | cramer      | 22:52:28
+        2 | 12:11:00 | crosby      | 22:52:28
+        2 | 22:52:28 | finish      | 22:52:28
+        2 | 09:32:00 | finland     | 22:52:28
+        2 | 21:09:00 | oberg       | 22:52:28
+(20 rows)
+
+SELECT aidstation, min(split), avg(split), max(split) 
+FROM superiorsplits GROUP BY aidstation ORDER BY min(split);
+ aidstation  |   min    |       avg       |   max    
+-------------+----------+-----------------+----------
+ splitrock   | 01:18:00 | 02:11:53.311475 | 03:21:00
+ beaverbay   | 02:53:00 | 04:33:59.390863 | 06:38:00
+ silverbay   | 03:40:00 | 05:52:20.067912 | 07:50:00
+ tettegouche | 05:30:00 | 08:43:24        | 11:28:00
+ cr6         | 07:20:00 | 11:31:37.73309  | 14:30:00
+ finland     | 08:39:00 | 14:00:09.590164 | 17:56:00
+ crosby      | 10:56:00 | 18:25:52.129032 | 23:53:00
+ sugarloaf   | 13:00:00 | 22:11:23.595506 | 27:45:00
+ cramer      | 14:49:00 | 24:29:03.46988  | 29:36:00
+ temperance  | 16:22:00 | 26:57:45.721519 | 32:07:00
+ sawbill     | 17:30:00 | 28:50:58.469388 | 33:30:00
+ oberg       | 18:00:00 | 30:25:14.676259 | 34:57:00
+ finish      | 19:30:37 | 32:58:00.671329 | 38:26:38
+(13 rows)
+
+SELECT aidstation, min(split), avg(split), max(split) 
+FROM superiorsplits 
+WHERE finish BETWEEN '35 hours'::interval AND '37 hours'::interval
+GROUP BY aidstation ORDER BY min(split);
+ aidstation  |   min    |       avg       |   max    
+-------------+----------+-----------------+----------
+ splitrock   | 01:44:00 | 02:20:34.455446 | 02:54:00
+ beaverbay   | 03:45:00 | 04:48:42.178218 | 05:46:00
+ silverbay   | 04:46:00 | 06:10:43.68932  | 07:07:00
+ tettegouche | 07:27:00 | 09:11:39.056604 | 10:36:00
+ cr6         | 10:10:00 | 12:12:33.142857 | 13:47:00
+ finland     | 12:28:00 | 15:04:33.142857 | 16:42:00
+ crosby      | 16:32:00 | 20:03:01.730769 | 22:32:00
+ sugarloaf   | 20:49:00 | 24:06:47.884615 | 26:43:00
+ cramer      | 24:40:00 | 26:20:06.407767 | 28:42:00
+ temperance  | 27:36:00 | 29:06:24.950495 | 30:55:00
+ sawbill     | 29:55:00 | 31:03:25.8      | 32:35:00
+ oberg       | 31:28:00 | 33:09:50        | 34:30:00
+ finish      | 35:00:01 | 35:55:32.2      | 36:59:06
+(13 rows)
+
+CREATE TABLE bitner_goal AS 
+WITH 
+goalsplits AS (
+    SELECT aidstation, avg(split) as goal
+    FROM superiorsplits 
+    WHERE finish BETWEEN '35 hours'::interval AND '37 hours'::interval
+    GROUP BY aidstation ORDER BY min(split)
+)
+SELECT 
+    aidstation,
+    miles as miles,
+    miles - coalesce(lag(miles) OVER (ORDER BY miles),0) AS miles_section,
+    coalesce(lag(goal) OVER (ORDER BY miles),'0 hours'::interval) as goal_from,
+    goal as goal_to,
+    goal - coalesce(lag(goal) OVER (ORDER BY miles),'0 hours'::interval) AS goal_section,
+    '2017-09-08 08:00:00 CDT'::timestamptz + goal AS goal_time,
+    (goal - coalesce(lag(goal) OVER (ORDER BY miles),'0 hours'::interval)) 
+    /  
+    (miles - coalesce(lag(miles) OVER (ORDER BY miles),0))
+    as pace_section
+FROM
+    sections JOIN goalsplits USING (aidstation)
+;
+SELECT 13
+SELECT * FROM bitner_goal;
+ aidstation  | miles |  miles_section   |    goal_from    |     goal_to     |  goal_section   |           goal_time           |  pace_section   
+-------------+-------+------------------+-----------------+-----------------+-----------------+-------------------------------+-----------------
+ splitrock   |   9.7 |              9.7 | 00:00:00        | 02:20:34.455446 | 02:20:34.455446 | 2017-09-08 10:20:34.455446-05 | 00:14:29.531489
+ beaverbay   |    20 |             10.3 | 02:20:34.455446 | 04:48:42.178218 | 02:28:07.722772 | 2017-09-08 12:48:42.178218-05 | 00:14:22.885706
+ silverbay   |  24.9 |              4.9 | 04:48:42.178218 | 06:10:43.68932  | 01:22:01.511102 | 2017-09-08 14:10:43.68932-05  | 00:16:44.390021
+ tettegouche |  34.8 |              9.9 | 06:10:43.68932  | 09:11:39.056604 | 03:00:55.367284 | 2017-09-08 17:11:39.056604-05 | 00:18:16.501746
+ cr6         |  43.4 |              8.6 | 09:11:39.056604 | 12:12:33.142857 | 03:00:54.086253 | 2017-09-08 20:12:33.142857-05 | 00:21:02.103053
+ finland     |  51.1 |              7.7 | 12:12:33.142857 | 15:04:33.142857 | 02:52:00        | 2017-09-08 23:04:33.142857-05 | 00:22:20.25974
+ crosby      |  62.8 |             11.7 | 15:04:33.142857 | 20:03:01.730769 | 04:58:28.587912 | 2017-09-09 04:03:01.730769-05 | 00:25:30.648539
+ sugarloaf   |  72.2 | 9.40000000000001 | 20:03:01.730769 | 24:06:47.884615 | 04:03:46.153846 | 2017-09-09 08:06:47.884615-05 | 00:25:55.973813
+ cramer      |  77.8 | 5.59999999999999 | 24:06:47.884615 | 26:20:06.407767 | 02:13:18.523152 | 2017-09-09 10:20:06.407767-05 | 00:23:48.307706
+ temperance  |  84.9 | 7.10000000000001 | 26:20:06.407767 | 29:06:24.950495 | 02:46:18.542728 | 2017-09-09 13:06:24.950495-05 | 00:23:25.428553
+ sawbill     |  90.6 | 5.69999999999999 | 29:06:24.950495 | 31:03:25.8      | 01:57:00.849505 | 2017-09-09 15:03:25.8-05      | 00:20:31.727983
+ oberg       |  96.1 |              5.5 | 31:03:25.8      | 33:09:50        | 02:06:24.2      | 2017-09-09 17:09:50-05        | 00:22:58.945455
+ finish      | 103.2 | 7.10000000000001 | 33:09:50        | 35:55:32.2      | 02:45:42.2      | 2017-09-09 19:55:32.2-05      | 00:23:20.309859
+(13 rows)
+
+CREATE TABLE bitner_goal_track AS
+WITH
+t1 AS (
+    SELECT 
+        st_addmeasure(geom, to_epoch(goal_from), to_epoch(goal_to)) AS geom
+    FROM
+        sections JOIN bitner_goal USING (aidstation)
+),
+p1 AS 
+    (SELECT (st_dumppoints(geom)).* FROM t1),
+p2 AS
+    (SELECT DISTINCT ON (st_m(geom)) geom, st_m(geom) FROM p1 ORDER BY st_m(geom))
+SELECT st_makeline(geom) as geom FROM p2;
+SELECT 1
+SELECT substring(st_asewkt(geom),0,100) FROM bitner_goal_track;
+                                              substring                                              
+-----------------------------------------------------------------------------------------------------
+ SRID=26915;LINESTRING(616037 5221994 211.970001220703 0,616037 5221999 211.970001220703 2.964700848
+(1 row)
+
+WITH point AS 
+(SELECT st_geometryn(st_locatealong(geom,60),1) as point FROM superior1003dm)
+SELECT 
+        (st_m(
+            st_lineinterpolatepoint(
+                geom,
+                st_linelocatepoint(geom,point.point)
+            )
+        )::text || ' seconds')::interval
+FROM bitner_goal_track, point;
+    interval     
+-----------------
+ 16:44:02.672161
+(1 row)
+
+SELECT * FROM superiorsplits 
+WHERE aidstation='finish' AND finish BETWEEN '35.5 hours'::interval AND '36.5 hours'::interval LIMIT 20;
+ runnerid |  split   | aidstation |  finish  
+----------+----------+------------+----------
+       93 | 35:34:01 | finish     | 35:34:01
+       94 | 35:38:16 | finish     | 35:38:16
+       95 | 35:41:20 | finish     | 35:41:20
+       96 | 35:44:56 | finish     | 35:44:56
+       97 | 35:50:24 | finish     | 35:50:24
+       98 | 35:55:25 | finish     | 35:55:25
+       99 | 35:58:07 | finish     | 35:58:07
+      100 | 35:58:07 | finish     | 35:58:07
+      101 | 36:00:57 | finish     | 36:00:57
+      102 | 36:02:11 | finish     | 36:02:11
+      103 | 36:02:12 | finish     | 36:02:12
+      104 | 36:02:14 | finish     | 36:02:14
+      105 | 36:05:35 | finish     | 36:05:35
+      106 | 36:08:41 | finish     | 36:08:41
+      107 | 36:14:30 | finish     | 36:14:30
+      108 | 36:15:33 | finish     | 36:15:33
+      109 | 36:15:35 | finish     | 36:15:35
+      110 | 36:18:15 | finish     | 36:18:15
+      111 | 36:19:55 | finish     | 36:19:55
+      112 | 36:28:02 | finish     | 36:28:02
+(20 rows)
+
+CREATE TABLE target_goal AS 
+WITH 
+goalsplits AS (
+    SELECT aidstation, split as goal
+    FROM superiorsplits 
+    WHERE runnerid = 93
+)
+SELECT 
+    aidstation,
+    miles as miles,
+    miles - coalesce(lag(miles) OVER (ORDER BY miles),0) AS miles_section,
+    coalesce(lag(goal) OVER (ORDER BY miles),'0 hours'::interval) as goal_from,
+    goal as goal_to,
+    goal - coalesce(lag(goal) OVER (ORDER BY miles),'0 hours'::interval) AS goal_section,
+    '2017-09-08 08:00:00 CDT'::timestamptz + goal AS goal_time,
+    (goal - coalesce(lag(goal) OVER (ORDER BY miles),'0 hours'::interval)) 
+    /  
+    (miles - coalesce(lag(miles) OVER (ORDER BY miles),0))
+    as pace_section
+FROM
+    sections JOIN goalsplits USING (aidstation)
+;
+SELECT 11
+SELECT * FROM target_goal;
+ aidstation  | miles |  miles_section   | goal_from | goal_to  | goal_section |       goal_time        |  pace_section   
+-------------+-------+------------------+-----------+----------+--------------+------------------------+-----------------
+ silverbay   |  24.9 |             24.9 | 00:00:00  | 06:36:00 | 06:36:00     | 2017-09-08 14:36:00-05 | 00:15:54.216867
+ tettegouche |  34.8 |              9.9 | 06:36:00  | 09:30:00 | 02:54:00     | 2017-09-08 17:30:00-05 | 00:17:34.545455
+ cr6         |  43.4 |              8.6 | 09:30:00  | 12:25:00 | 02:55:00     | 2017-09-08 20:25:00-05 | 00:20:20.930233
+ finland     |  51.1 |              7.7 | 12:25:00  | 15:00:00 | 02:35:00     | 2017-09-08 23:00:00-05 | 00:20:07.792208
+ crosby      |  62.8 |             11.7 | 15:00:00  | 19:40:00 | 04:40:00     | 2017-09-09 03:40:00-05 | 00:23:55.897436
+ sugarloaf   |  72.2 | 9.40000000000001 | 19:40:00  | 23:40:00 | 04:00:00     | 2017-09-09 07:40:00-05 | 00:25:31.914894
+ cramer      |  77.8 | 5.59999999999999 | 23:40:00  | 25:45:00 | 02:05:00     | 2017-09-09 09:45:00-05 | 00:22:19.285714
+ temperance  |  84.9 | 7.10000000000001 | 25:45:00  | 28:32:00 | 02:47:00     | 2017-09-09 12:32:00-05 | 00:23:31.267606
+ sawbill     |  90.6 | 5.69999999999999 | 28:32:00  | 30:35:00 | 02:03:00     | 2017-09-09 14:35:00-05 | 00:21:34.736842
+ oberg       |  96.1 |              5.5 | 30:35:00  | 32:51:00 | 02:16:00     | 2017-09-09 16:51:00-05 | 00:24:43.636364
+ finish      | 103.2 | 7.10000000000001 | 32:51:00  | 35:34:01 | 02:43:01     | 2017-09-09 19:34:01-05 | 00:22:57.605634
+(11 rows)
+
+CREATE TABLE target_goal_track AS
+WITH
+t1 AS (
+    SELECT 
+        st_addmeasure(geom, to_epoch(goal_from), to_epoch(goal_to)) AS geom
+    FROM
+        sections JOIN target_goal USING (aidstation)
+),
+p1 AS 
+    (SELECT (st_dumppoints(geom)).* FROM t1),
+p2 AS
+    (SELECT DISTINCT ON (st_m(geom)) geom, st_m(geom) FROM p1 ORDER BY st_m(geom))
+SELECT st_makeline(geom) as geom FROM p2;
+SELECT 1
+SELECT substring(st_asewkt(geom),0,100) FROM target_goal_track;
+                                              substring                                              
+-----------------------------------------------------------------------------------------------------
+ SRID=26915;LINESTRING(627886.980534602 5236115.86174252 283.254262283495 0,627889 5236118 283.35998
+(1 row)
+
+SELECT st_isvalidtrajectory(geom) FROM bitner_goal_track;
+ st_isvalidtrajectory 
+----------------------
+ t
+(1 row)
+
+SELECT st_isvalidtrajectory(geom) FROM target_goal_track;
+ st_isvalidtrajectory 
+----------------------
+ t
+(1 row)
+
+SELECT (st_closestpointofapproach(
+    (SELECT st_linesubstring(geom,.5,1) FROM bitner_goal_track),
+    (SELECT st_linesubstring(geom,.5,1) FROM target_goal_track)
+)::text || ' seconds')::interval;
+    interval     
+-----------------
+ 29:07:16.601321
+(1 row)
+
+SELECT st_distancecpa(
+    (SELECT st_linesubstring(geom,.5,1) FROM bitner_goal_track),
+    (SELECT st_linesubstring(geom,.5,1) FROM target_goal_track)
+);
+  st_distancecpa  
+------------------
+ 115.023461985643
+(1 row)
+
