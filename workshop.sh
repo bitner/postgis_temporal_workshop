@@ -1,3 +1,6 @@
 #!/bin/bash
-sed -n '/^```sql/,/^```/ p' < README.md | sed '/^```/ d' > README.sql
-sed -n '/^```bash/,/^```/ p' < README.md | sed '/^```/ d' > README.sh
+export PGDATBASE=superior
+sed -n '/^```sql/,/^```/ p' < index.md | sed '/^```/ d' > sqlcommands.sql
+sed -n '/^```bash/,/^```/ p' < index.md | sed '/^```/ d' > bashcommands.sh
+bash bashcommands.sh > testworkshop.txt
+psql -f sqlcommands.sql >> testworkshop.txt
