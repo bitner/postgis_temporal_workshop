@@ -563,3 +563,10 @@ SELECT st_distancecpa(
     (SELECT st_linesubstring(geom,.5,1) FROM target_goal_track)
 );
 ```
+---
+## Bonus Exercises #1
+Using previous race times, if I get to an aid station at a given time, use the other finishers who got to that aid station near that time to predict when I will get to all the following aid stations with some indicator of margin or error.
+---
+
+## Bonus Exercise #2
+Using previous race times, given a location/time that I am at any point in the race, predict when I will get to the following aid stations.
