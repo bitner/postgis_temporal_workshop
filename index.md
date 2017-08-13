@@ -11,6 +11,11 @@ Senior Development Engineer - Boundless Spatial
 The goal of this workshop is to walk through several examples of how to use 3rd and 4th dimension data with PostgreSQL and PostGIS with a particular emphasis on using M values with points and linestrings.
 
 ---
+<img src="https://lh3.googleusercontent.com/sVulInvyix9Ivdx3NNyka5ZPCNKgEoS9wic_HTEVFKJfLcG-cCkFgwQnTNIbTM59mQ3cHyX1RqIi5KeWlYVqJNsWWy17Pvv99jdaP-F7v1nsz5A-dZeMoTTh_QlWzxvY_SRzgaTY2bTvEGY6jnqKFWxghrpsyH6M3_HtDNPJvl35LVybmQ5v9w4Zers92dTnAjNoQCCpA8CdQufESAWL9eRwOM7Thb0_K4AK1ZWFn5h6BMYJDyqPQo61GVZzv3wsAif-Ltrn4jEG6jC39c1qvA00_jviB880UUp2AbGnICBjvlmRkv5oJl13BiAHVevQsMThP_hCnRRvMmGTd4gdEqM_8TwX11XW3dLmd-B1RsJ3pmMtdQWjQiHHMOvkXMY3T1dqVEkuOhd5Xsy2NZ2EvuDo3dEQjiHjxIqGSo_6rR0Xe15MTHfkYbj9Mv2r0Lb0Cnrjd6qOds9W_2DhAJM9mQpmeGwCjv8jHaaFNrT94g4Rt7AUYRp9u4DD1KyS8968RGuPqsgHEdE7qW1_BHHCFVngLSFFDuF05W17XRulRvpHu_Yhbsk9_xO3qBI5huGZBs39U6mfvXNeMmADlLhdcdHTINg75zGr9-6y0cqWROKielHIZpvaXH1egRQtNVp4SFaZWzF3ftmitpwNQ8qBlKDC0DdqlD5evYA99HkkOWQQn98=w2576-h1449-no" width='500px'></img>
+<notes>
+I have a bad habit of entering events where you go to really pretty places to run really far. In just a couple weeks I'll be making my first attempt to run 100 miles on the Superior Hiking Trail overlooking Lake Superior in Northern Minnesota. For the rest of this workshop, we'll use available data from previous years of this race to help setup a pace chart and create tools for my crew to help follow me during the event.
+</notes>
+---
 # Agenda
 * Setup
 * Time Basics
@@ -140,22 +145,11 @@ It can be very convenient to also be able to "round" time.
 </notes>
 
 ## Exercise: Truncate timestamps.
-
 ```sql
 SELECT date_trunc('month', now());
 SELECT date_trunc('month', now()) + '1 month'::interval;
 ```
 
-```sql
-SELECT st_dumppoints(geom) FROM superior100 limit 10;
-SELECT (st_dumppoints(geom)).* FROM superior100 limit 10;
-```
----
-# Shifting Gears
-<img src="https://lh3.googleusercontent.com/sVulInvyix9Ivdx3NNyka5ZPCNKgEoS9wic_HTEVFKJfLcG-cCkFgwQnTNIbTM59mQ3cHyX1RqIi5KeWlYVqJNsWWy17Pvv99jdaP-F7v1nsz5A-dZeMoTTh_QlWzxvY_SRzgaTY2bTvEGY6jnqKFWxghrpsyH6M3_HtDNPJvl35LVybmQ5v9w4Zers92dTnAjNoQCCpA8CdQufESAWL9eRwOM7Thb0_K4AK1ZWFn5h6BMYJDyqPQo61GVZzv3wsAif-Ltrn4jEG6jC39c1qvA00_jviB880UUp2AbGnICBjvlmRkv5oJl13BiAHVevQsMThP_hCnRRvMmGTd4gdEqM_8TwX11XW3dLmd-B1RsJ3pmMtdQWjQiHHMOvkXMY3T1dqVEkuOhd5Xsy2NZ2EvuDo3dEQjiHjxIqGSo_6rR0Xe15MTHfkYbj9Mv2r0Lb0Cnrjd6qOds9W_2DhAJM9mQpmeGwCjv8jHaaFNrT94g4Rt7AUYRp9u4DD1KyS8968RGuPqsgHEdE7qW1_BHHCFVngLSFFDuF05W17XRulRvpHu_Yhbsk9_xO3qBI5huGZBs39U6mfvXNeMmADlLhdcdHTINg75zGr9-6y0cqWROKielHIZpvaXH1egRQtNVp4SFaZWzF3ftmitpwNQ8qBlKDC0DdqlD5evYA99HkkOWQQn98=w2576-h1449-no" width='500px'></img>
-<notes>
-I have a bad habit of entering events where you go to really pretty places to run really far. In just a couple weeks I'll be making my first attempt to run 100 miles on the Superior Hiking Trail overlooking Lake Superior in Northern Minnesota. For the rest of this workshop, we'll use available data from previous years of this race to help setup a pace chart and create tools for my crew to help follow me during the event.
-</notes>
 ---
 ## Exercise: Load Superior 100 Race Course
 ```bash
@@ -169,6 +163,12 @@ SELECT * FROM superior100;
 Let's take a look at this track by blowing it up into the component points. [ST_DumpPoints](https://postgis.net/docs/ST_DumpPoints.html ) is a Set Returning Function that returns a record data type. In order to access the columns in the record, you'll notice that we must wrap the column that contains the record in parentheses.
 </notes>
 ## Exercise: Show first 10 points of track
+```sql
+SELECT st_dumppoints(geom) FROM superior100 limit 10;
+SELECT (st_dumppoints(geom)).* FROM superior100 limit 10;
+```
+---
+## Exercise: Now let's do that in a more useful way
 ```sql
 WITH t AS (SELECT st_dumppoints(geom) as dump FROM superior100)
 SELECT 
@@ -193,9 +193,11 @@ FROM t;
 ```
 ---
 ## Exercise Add an elevation to our table of track points
+Load a dem into PostGIS Raster
 ```bash
 raster2pgsql -I -Y -C -s 26915 -t 100x100 sht_dem25m.tif dem | psql
 ```
+Use [st_value](https://postgis.net/docs/RT_ST_Value.html) to assign the elevation for each point.
 ```sql
 ALTER TABLE superior100_points ADD COLUMN z float8;
 
@@ -206,27 +208,44 @@ FROM dem
 WHERE st_intersects(dem.rast,geom);
 ```
 ---
+<notes>
+In that exercise we just add the value to a z column, now we need to actually add that to the point. We can do that using the [st_makepoint](https://postgis.net/docs/ST_MakePoint.html) function. Note that this function returns a point without projection information which we need to add using [st_setsrid](https://postgis.net/docs/ST_SetSRID.html).
+</notes>
+## Exercise: Add this new dimension to our point geometries
 ```sql
 SELECT st_asewkt(geom), x, y, z FROM superior100_points LIMIT 10;
 
 UPDATE superior100_points SET geom = st_setsrid(st_makepoint(x,y,z), 26915);
+
+SELECT st_asewkt(geom) FROM superior100_points LIMIT 10;
 ```
 ---
+<notes>
+Now that we have added the third dimension to our points, we want to be able to convert that back into a line.
+We can do that using the [st_makeline](https://postgis.net/docs/ST_MakeLine.html) function which can act as an aggregate for a set of points.
+</notes>
+## Exercise: Reassemble points into a line.
 ```sql
-SELECT st_asewkt(geom) FROM superior100_points LIMIT 10;
-
 WITH t AS (SELECT * FROM superior100_points ORDER BY PATH)
 SELECT substring(st_asewkt(st_makeline(geom)),1,100) FROM t;
 ```
 ---
+## Exercise: Let's save the 3d line into a new table
 ```sql
 CREATE TABLE superior1003d AS
 WITH t AS (SELECT * FROM superior100_points ORDER BY PATH)
 SELECT st_makeline(geom) as geom FROM t;
-
+```
+---
+<notes>
+Now that we have our data as a set of ordered points, using [Window Functions](https://www.postgresql.org/docs/9.6/static/tutorial-window.html) we can start to have fun and extract useful information about what is happening along our track. In trail running, it is very useful to understand what the terrain is like by understanding what the elevation gain and loss is. We'll use the elevation data that we created to figure out how much climbing and descending there is along this trail.
+</notes>
+## Exercise: Look at the elevation change between each segment
+```sql
 SELECT path, x, y, z, z-lag(z) OVER (ORDER BY PATH) FROM superior100_points LIMIT 20;
 ```
 ---
+## Exercise: Add this elevation change to our table
 ```sql
 ALTER TABLE superior100_points ADD COLUMN elchange float8;
 
@@ -236,6 +255,10 @@ UPDATE superior100_points p SET elchange=t.elchange FROM t WHERE p.path=t.path;
 SELECT x, y, z, elchange FROM superior100_points limit 10;
 ```
 ---
+<notes>
+Now that we have the change per segment we can see how much total climbing and descending there is.
+<notes>
+## Exercise: Calculate overall elevation change
 ```sql
 SELECT 
     3.28 * sum(elchange) FILTER (WHERE elchange>0) as gain, 
@@ -243,12 +266,19 @@ SELECT
 FROM superior100_points;
 ```
 ---
+<notes>
+We can also do interesting things like alculate the direction between points using [st_azimuth](http://www.postgis.org/docs/ST_Azimuth.html). This can be especially useful if you are trying to create animations that show things like a plane icon pointing in the right direction. Note this function returns the direction in radians that we have to convert to degrees.
+</notes>
+## Exercise: Calculate the direction of each segment
 ```sql
 SELECT path, x, y, z, degrees(st_azimuth(lag(geom) OVER (ORDER BY path), geom)) FROM superior100_points LIMIT 20;
 ```
 ---
+<notes>
+PostGIS has the ability to calculate lengths and distances taking into account our third dimension, let's take a look at the differences between a 2d length calculation and one that takes into account the elevation changes using the explicit [st_3dlength](https://postgis.net/docs/ST_3DLength.html).
+</notes>
+## Exercise: Compare 2d and 3d length
 ```sql
-SELECT st_length(geom)/1609 FROM superior100;
 SELECT st_length(geom)/1609 FROM superior1003d;
 SELECT st_3dlength(geom)/1609 FROM superior1003d;
 ```
