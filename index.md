@@ -13,9 +13,9 @@ The goal of this workshop is to walk through several examples of how to use 3rd 
 ---
 <img src="https://lh3.googleusercontent.com/sVulInvyix9Ivdx3NNyka5ZPCNKgEoS9wic_HTEVFKJfLcG-cCkFgwQnTNIbTM59mQ3cHyX1RqIi5KeWlYVqJNsWWy17Pvv99jdaP-F7v1nsz5A-dZeMoTTh_QlWzxvY_SRzgaTY2bTvEGY6jnqKFWxghrpsyH6M3_HtDNPJvl35LVybmQ5v9w4Zers92dTnAjNoQCCpA8CdQufESAWL9eRwOM7Thb0_K4AK1ZWFn5h6BMYJDyqPQo61GVZzv3wsAif-Ltrn4jEG6jC39c1qvA00_jviB880UUp2AbGnICBjvlmRkv5oJl13BiAHVevQsMThP_hCnRRvMmGTd4gdEqM_8TwX11XW3dLmd-B1RsJ3pmMtdQWjQiHHMOvkXMY3T1dqVEkuOhd5Xsy2NZ2EvuDo3dEQjiHjxIqGSo_6rR0Xe15MTHfkYbj9Mv2r0Lb0Cnrjd6qOds9W_2DhAJM9mQpmeGwCjv8jHaaFNrT94g4Rt7AUYRp9u4DD1KyS8968RGuPqsgHEdE7qW1_BHHCFVngLSFFDuF05W17XRulRvpHu_Yhbsk9_xO3qBI5huGZBs39U6mfvXNeMmADlLhdcdHTINg75zGr9-6y0cqWROKielHIZpvaXH1egRQtNVp4SFaZWzF3ftmitpwNQ8qBlKDC0DdqlD5evYA99HkkOWQQn98=w2576-h1449-no" width='500px'></img>
 
-<notes>
+
 I have a bad habit of entering events where you go to really pretty places to run really far. In just a couple weeks I'll be making my first attempt to run 100 miles on the Superior Hiking Trail overlooking Lake Superior in Northern Minnesota. For the rest of this workshop, we'll use available data from previous years of this race to help setup a pace chart and create tools for my crew to help follow me during the event.
-</notes>
+
 ---
 # Agenda
 * Setup
@@ -36,13 +36,13 @@ psql -c "SELECT postgis_full_version();"
 * https://www.postgresql.org/docs/9.6/static/functions-datetime.html
 * https://www.postgresql.org/docs/9.6/static/functions-formatting.html
 
-<notes>
+
 PostgreSQL has very extensive support for temporal data using the Timestamp, TimestampTZ, Date, Time, TimeTZ, and Interval data types. PostgreSQL is very forgiving as to how data can be input as plain text.
 
 It should be noted that in almost all cases it is better to use the Time Zone aware TimestampTZ and TimeTZ data types as the non timezone aware Timestamp and Time can be lossy and ambiguous in most circumstances. 
 
 Further, while PostgreSQL is incredibly tolerant of text data input formats, ISO8601 should be the preferred method for communicating with dates and times. Day/month/year and month/day/year can be particularly problematic as they are each preferred in different parts of the world.
-</notes>
+
 
 ---
 <img src="https://imgs.xkcd.com/comics/iso_8601.png" width='500px'></img>
@@ -57,9 +57,9 @@ SELECT '2017-01-01'::timestamptz;
 SELECT '4/5/2017'::timestamptz;
 ```
 ---
-<notes>
+
 Day/month/year and month/day/year can be particularly problematic as they are each preferred in different parts of the world.
-</notes>
+
 
 ### Exercise: Use session settings to control Timestamp in/out
 
@@ -71,9 +71,9 @@ SET datestyle TO DEFAULT;
 SELECT '4/5/2017'::timestamptz;
 ```
 ---
-<notes>
+
 By using the TimestampTZ data type it becomes easy to view the data in whatever locality is necessary at the moment.
-</notes>
+
 
 ### Exercise: Use session settings to control Timezone in/out
 
@@ -98,18 +98,18 @@ SELECT timezone('UTC', now());
 SELECT now() AT TIME ZONE 'America/Chicago';
 ```
 ---
-<notes>
+
 PostgreSQL also has an interval type that can maintain periods of time
-</notes>
+
 
 ```sql
 SELECT '1 day'::interval;
 SELECT '2016-01-01'::timestamptz + '3 months'::interval;
 ```
 ---
-<notes>
+
 When no proper Time Data Types are available, one convenient way of dealing with time is to use Unix Epoch time. This is the number of seconds since the start of the Unix Epoch (1979-01-01). We will see later that using Unix Epoch can be very handy when we start to look at PostGIS Linear Referencing.
-</notes>
+
 
 ## Exercise: Convert between Time Data Types and Epoch Seconds
 
@@ -123,9 +123,9 @@ SELECT extract(epoch from '2017-01-01'::timestamptz);
 SELECT extract(epoch from '1 hour'::interval);
 ```
 ---
-<notes>
+
 For convenience sake if you are doing this conversion frequently, PostgreSQL makes creating your own functions very easy. Let's create custom functions for converting Intervals and TimestampTZ into Epochs.
-</notes>
+
 
 ## Exercise: Create custom functions for converting to Unix Epoch
 
@@ -142,9 +142,9 @@ SELECT to_epoch('2017-01-01'::timestamptz);
 SELECT to_epoch('1 hour'::interval);
 ```
 ---
-<notes>
+
 It can be very convenient to also be able to "round" time.
-</notes>
+
 
 ## Exercise: Truncate timestamps.
 ```sql
@@ -161,9 +161,8 @@ shp2pgsql -I -s 26915 -D superior100.shp superior100 | psql
 SELECT * FROM superior100;
 ```
 ---
-<notes>
-Let's take a look at this track by blowing it up into the component points. [ST_DumpPoints](https://postgis.net/docs/ST_DumpPoints.html ) is a Set Returning Function that returns a record data type. In order to access the columns in the record, you'll notice that we must wrap the column that contains the record in parentheses.
-</notes>
+Let's take a look at this track by blowing it up into the component points. [ST_DumpPoints](https://postgis.net/docs/ST_DumpPoints.html) is a Set Returning Function that returns a record data type. In order to access the columns in the record, you'll notice that we must wrap the column that contains the record in parentheses.
+
 ## Exercise: Show first 10 points of track
 ```sql
 SELECT st_dumppoints(geom) FROM superior100 limit 10;
@@ -210,9 +209,9 @@ FROM dem
 WHERE st_intersects(dem.rast,geom);
 ```
 ---
-<notes>
+
 In that exercise we just add the value to a z column, now we need to actually add that to the point. We can do that using the [st_makepoint](https://postgis.net/docs/ST_MakePoint.html) function. Note that this function returns a point without projection information which we need to add using [st_setsrid](https://postgis.net/docs/ST_SetSRID.html).
-</notes>
+
 ## Exercise: Add this new dimension to our point geometries
 ```sql
 SELECT st_asewkt(geom), x, y, z FROM superior100_points LIMIT 10;
@@ -222,10 +221,10 @@ UPDATE superior100_points SET geom = st_setsrid(st_makepoint(x,y,z), 26915);
 SELECT st_asewkt(geom) FROM superior100_points LIMIT 10;
 ```
 ---
-<notes>
+
 Now that we have added the third dimension to our points, we want to be able to convert that back into a line.
 We can do that using the [st_makeline](https://postgis.net/docs/ST_MakeLine.html) function which can act as an aggregate for a set of points.
-</notes>
+
 ## Exercise: Reassemble points into a line.
 ```sql
 WITH t AS (SELECT * FROM superior100_points ORDER BY PATH)
@@ -239,9 +238,9 @@ WITH t AS (SELECT * FROM superior100_points ORDER BY PATH)
 SELECT st_makeline(geom) as geom FROM t;
 ```
 ---
-<notes>
+
 Now that we have our data as a set of ordered points, using [Window Functions](https://www.postgresql.org/docs/9.6/static/tutorial-window.html) we can start to have fun and extract useful information about what is happening along our track. In trail running, it is very useful to understand what the terrain is like by understanding what the elevation gain and loss is. We'll use the elevation data that we created to figure out how much climbing and descending there is along this trail.
-</notes>
+
 ## Exercise: Look at the elevation change between each segment
 ```sql
 SELECT path, x, y, z, z-lag(z) OVER (ORDER BY PATH) FROM superior100_points LIMIT 20;
@@ -257,9 +256,9 @@ UPDATE superior100_points p SET elchange=t.elchange FROM t WHERE p.path=t.path;
 SELECT x, y, z, elchange FROM superior100_points limit 10;
 ```
 ---
-<notes>
+
 Now that we have the change per segment we can see how much total climbing and descending there is.
-</notes>
+
 ## Exercise: Calculate overall elevation change
 ```sql
 SELECT 
@@ -268,17 +267,17 @@ SELECT
 FROM superior100_points;
 ```
 ---
-<notes>
-We can also do interesting things like alculate the direction between points using [st_azimuth](http://www.postgis.org/docs/ST_Azimuth.html). This can be especially useful if you are trying to create animations that show things like a plane icon pointing in the right direction. Note this function returns the direction in radians that we have to convert to degrees.
-</notes>
+
+We can also do interesting things like calculate the direction between points using [st_azimuth](http://www.postgis.org/docs/ST_Azimuth.html). This can be especially useful if you are trying to create animations that show things like a plane icon pointing in the right direction. Note this function returns the direction in radians that we have to convert to degrees.
+
 ## Exercise: Calculate the direction of each segment
 ```sql
 SELECT path, x, y, z, degrees(st_azimuth(lag(geom) OVER (ORDER BY path), geom)) FROM superior100_points LIMIT 20;
 ```
 ---
-<notes>
+
 PostGIS has the ability to calculate lengths and distances taking into account our third dimension, let's take a look at the differences between a 2d length calculation and one that takes into account the elevation changes using the explicit [st_3dlength](https://postgis.net/docs/ST_3DLength.html).
-</notes>
+
 ## Exercise: Compare 2d and 3d length
 ```sql
 SELECT st_length(geom)/1609 FROM superior1003d;
@@ -286,23 +285,23 @@ SELECT st_3dlength(geom)/1609 FROM superior1003d;
 ```
 ---
 # [Linear Referncing](https://postgis.net/docs/reference.html#Linear_Referencing)
-<notes>
+
 PostGIS comes with a great set of tools for doing interpolation along tracks. These tools either use the ration along the track (from 0-1) or they use a 4th ordinate as a measure, referred to as the M ordinate.
-</notes>
+
 ---
 ## Exercise: Use [st_lineinterpolatepoint](https://postgis.net/docs/ST_LineInterpolatePoint.html) to calculate the halfway point and the point 50 miles along our track.
-<notes>
+
 These will both be using just the 2d distance.
-</notes>
+
 
 ```sql
 SELECT st_asewkt(st_lineinterpolatepoint(geom,.5)) FROM superior1003d;
 SELECT st_asewkt(st_lineinterpolatepoint(geom,50*1609/st_length(geom))) FROM superior1003d;
 ```
 ---
-<notes>
+
 Geographic data collection is not always entirely precise (shocker). The official distance for this race is 103.2 miles and all the aid stations have mileages given to them that do not entirely match the track that we have. For planning purposes and to match all the signage on the course, it is more important for us to match with those published distances than with the distances that we have along our track. Let's take a look at what those differences mean for our course. We can use [st_linelocatepoint](https://postgis.net/docs/ST_LineLocatePoint.html) to find the point on the track nearest a given point (in this case our aid station).
-</notes>
+
 ---
 ## Exercise: Load aid station locations
 ```bash
@@ -324,9 +323,9 @@ ORDER BY a.miles
 ;
 ```
 ---
-<notes>
+
 Using the aid stations, we can separate our track into sections that we know what the distance should be between each section. We'll use our window functions again to calculate the distance between each aid station and to locate the aidstations as ratios along our track. We can then extract each section using another linear referencing function [st_linesubstring](https://postgis.net/docs/ST_LineSubstring.html) which works very similar to a string substring function splitting out the section of the track using these ratios.
-</notes>
+
 ## Exercise: Split track into segments between aid stations
 ```sql
 CREATE TABLE sections AS
@@ -351,9 +350,9 @@ ORDER BY a.miles
 SELECT aidstation, miles, substring(st_asewkt(geom),0,100) FROM sections;
 ```
 ---
-<notes>
+
 Now that we have measures calculated per section, we can recombine those sections to create a single track with our corrected distance measures along the entire track.
-</notes>
+
 ## Exercise: Merge the line segments together
 ```sql
 CREATE TABLE superior1003dm AS 
@@ -361,13 +360,13 @@ SELECT st_linemerge(st_collect(geom)) AS geom FROM sections;
 
 SELECT substring(st_asewkt(geom),0,100) FROM superior1003dm;
 ```
-<notes>
+
 UH OH! Notice that in this result, our measure value (the 4th ordinate) is missing! Not all functions in PostGIS maintain the 4th dimension!
-</notes>
+
 ---
-<notes>
+
 We're not done yet, remember we can still blow our tracks into individual points and sew them back together
-</notes>
+
 ## Exercise: Merge the line segments together take 2
 ```sql
 DROP TABLE superior1003dm;
@@ -381,13 +380,13 @@ SELECT st_makeline(geom) as geom FROM p2;
 
 SELECT substring(st_asewkt(geom),0,100) FROM superior1003dm;
 ```
-<notes>
+
 Why did we have to use the "DISTINCT ON"? For each segment when we constructed the segment the endpoint of on is the startpoint of the next and we don't want to double those points
-</notes>
+
 ---
-<notes>
+
 We've now learned how to use our M ordinate to store information about distance information, but we all came here to learn how we can work with time and PostGIS. I've found the last three years splits for the race for each aid station. We can use this data to start to develop a pace chart for where I can hope to run. Let's load this split data (to save time we are just going to use a sql script to load and format the data for us to use)
-</notes>
+
 ```bash
 psql -a -f loadresults.sql
 ```
@@ -400,10 +399,10 @@ SELECT aidstation, min(split), avg(split), max(split)
 FROM superiorsplits GROUP BY aidstation ORDER BY min(split);
 ```
 ---
-<notes>
+
 I'm slow.
 Probably not best to try to calculate my splits from all the results, let's limit it to folks who finished in the time range that I hope to finish in.
-</notes>
+
 ## Exercise: Find average times to get to each aid station to finish in around 36 hours
 ```sql
 SELECT aidstation, min(split), avg(split), max(split) 
@@ -412,9 +411,9 @@ WHERE finish BETWEEN '35 hours'::interval AND '37 hours'::interval
 GROUP BY aidstation ORDER BY min(split);
 ```
 ---
-<notes>
+
 Once we have the splits we can create a pace chart for when I should get to each aid station.
-</notes>
+
 ## Exercise: Create pace chart for a 36 hour goal
 ```sql
 CREATE TABLE bitner_goal AS 
@@ -447,9 +446,9 @@ FROM
 SELECT * FROM bitner_goal;
 ```
 ---
-<notes>
+
 Now that we know what time we want to get to each aid station, we can also create a track similar to what we did for our distance measure along only using time for our measure rather than distance. Now we can't use an interval or timestamptz as our M value, so instead we are going to use the Unix Epoch or a number of seconds. We can use either the actual timestamptz or we can use time along the course. We're going to use the latter.
-</notes>
+
 ## Exercise: Create a track that contains our time along measure for our goals
 ```sql
 CREATE TABLE bitner_goal_track AS
@@ -469,9 +468,9 @@ SELECT st_makeline(geom) as geom FROM p2;
 SELECT substring(st_asewkt(geom),0,100) FROM bitner_goal_track;
 ```
 ---
-<notes>
+
 I have a satellite tracker that I carry with on these races that every ten minutes let's my crew (the people who meet me at the aid stations to help me out) know where I am. Now I can pass in a point from that tracker anywher along the track and my crew can tell how far ahead or behind of my planned pace I am. Similarly for any given point or distance along the track they could tell when I am hoping to get there (if you are moving through these exercises really fast you can take that on as a challenge exercise).
-</notes>
+
 ## Exercise: Find where I should be at given a location
 ```sql
 WITH point AS 
@@ -480,9 +479,9 @@ SELECT (st_m(st_linelocatepoint(geom,point.point))::text || ' seconds')::interva
 FROM bitner_goal_track;
 ```
 ---
-<notes>
+
 We can to the same as we've done with my target times to create tracks from the previous runners
-</notes>
+
 ```sql
 SELECT * FROM superiorsplits 
 WHERE aidstation='finish' AND finish BETWEEN '35.5 hours'::interval AND '36.5 hours'::interval LIMIT 20;
@@ -534,18 +533,18 @@ SELECT st_makeline(geom) as geom FROM p2;
 SELECT substring(st_asewkt(geom),0,100) FROM target_goal_track;
 ```
 ---
-<notes>
+
 When we are adding an M value, PostGIS will allow us to add any value that we want. In order to be a "proper measure" those values should be continuously increasing along the path. PostGIS has a function [st_isvalidtrajectory](https://postgis.net/docs/ST_IsValidTrajectory.html) that will check for this.
-</notes>
+
 ## Exercise: Check our two tracks for good measures
 ```sql
 SELECT st_isvalidtrajectory(geom) FROM bitner_goal_track;
 SELECT st_isvalidtrajectory(geom) FROM target_goal_track;
 ```
 ---
-<notes>
+
 Once we have valid trajectories, we can use the closest point of approach functions [st_closestpointofapproach](https://postgis.net/docs/ST_ClosestPointOfApproach.html) and [st_distancecpa](https://postgis.net/docs/ST_DistanceCPA.html) to find out if two trajectories met and when (or the closest they got). We'll just look at the last half of the tracks as everyone was together at the start.
-</notes>
+
 ## Exercise: Determine how close my goal track and the track created from a previous runner got
 ```sql
 SELECT (st_closestpointofapproach(
