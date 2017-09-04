@@ -75,7 +75,8 @@ FROM dem
 WHERE st_intersects(dem.rast,geom);
 SELECT st_asewkt(geom), x, y, z FROM superior100_points LIMIT 10;
 
-UPDATE superior100_points SET geom = st_setsrid(st_makepoint(x,y,z), 26915);
+UPDATE superior100_points 
+SET geom = st_setsrid(st_makepoint(x,y,z), 26915);
 
 SELECT st_asewkt(geom) FROM superior100_points LIMIT 10;
 WITH t AS (SELECT * FROM superior100_points ORDER BY PATH)
@@ -83,22 +84,31 @@ SELECT substring(st_asewkt(st_makeline(geom)),1,100) FROM t;
 CREATE TABLE superior1003d AS
 WITH t AS (SELECT * FROM superior100_points ORDER BY PATH)
 SELECT st_makeline(geom) as geom FROM t;
-SELECT path, x, y, z, z-lag(z) OVER (ORDER BY PATH) FROM superior100_points LIMIT 20;
+SELECT path, x, y, z, z-lag(z) OVER (ORDER BY PATH) 
+FROM superior100_points LIMIT 20;
 ALTER TABLE superior100_points ADD COLUMN elchange float8;
 
-WITH t AS (SELECT path, x, y, z, round((z-lag(z) OVER (ORDER BY PATH))::numeric,1) elchange FROM superior100_points)
-UPDATE superior100_points p SET elchange=t.elchange FROM t WHERE p.path=t.path;
+WITH t AS (SELECT path, x, y, z, 
+    round((z-lag(z) OVER (ORDER BY PATH))::numeric,1) elchange 
+    FROM superior100_points)
+UPDATE superior100_points p SET elchange=t.elchange 
+FROM t WHERE p.path=t.path;
 
 SELECT x, y, z, elchange FROM superior100_points limit 10;
 SELECT 
     3.28 * sum(elchange) FILTER (WHERE elchange>0) as gain, 
     3.28 * sum(elchange) FILTER (WHERE elchange<0) as descent 
 FROM superior100_points;
-SELECT path, x, y, z, degrees(st_azimuth(lag(geom) OVER (ORDER BY path), geom)) FROM superior100_points LIMIT 20;
+SELECT path, x, y, z, 
+    degrees(st_azimuth(lag(geom) OVER (ORDER BY path), geom)) 
+FROM superior100_points LIMIT 20;
 SELECT st_length(geom)/1609 FROM superior1003d;
 SELECT st_3dlength(geom)/1609 FROM superior1003d;
-SELECT st_asewkt(st_lineinterpolatepoint(geom,.5)) FROM superior1003d;
-SELECT st_asewkt(st_lineinterpolatepoint(geom,50*1609/st_length(geom))) FROM superior1003d;
+SELECT st_asewkt(st_lineinterpolatepoint(geom,.5)) 
+FROM superior1003d;
+
+SELECT st_asewkt(st_lineinterpolatepoint(geom,50*1609/st_length(geom)))
+FROM superior1003d;
 SELECT
     a.aidstation,
     a.miles,
@@ -117,7 +127,8 @@ SELECT
     st_addmeasure(
         st_linesubstring(
             s.geom,
-            st_linelocatepoint(s.geom,lag(a.geom) OVER (ORDER BY miles)),
+            st_linelocatepoint(s.geom,
+                lag(a.geom) OVER (ORDER BY miles)),
             st_linelocatepoint(s.geom,a.geom)
         ),
         lag(a.miles) OVER (ORDER BY miles),
@@ -140,7 +151,8 @@ WITH
 p1 AS 
     (SELECT (st_dumppoints(geom)).* FROM sections),
 p2 AS
-    (SELECT DISTINCT ON (st_m(geom)) geom, st_m(geom) FROM p1 ORDER BY st_m(geom))
+    (SELECT DISTINCT ON (st_m(geom)) geom, st_m(geom) 
+     FROM p1 ORDER BY st_m(geom))
 SELECT st_makeline(geom) as geom FROM p2;
 
 SELECT substring(st_asewkt(geom),0,100) FROM superior1003dm;
@@ -166,7 +178,9 @@ SELECT
     miles - coalesce(lag(miles) OVER (ORDER BY miles),0) AS miles_section,
     coalesce(lag(goal) OVER (ORDER BY miles),'0 hours'::interval) as goal_from,
     goal as goal_to,
-    goal - coalesce(lag(goal) OVER (ORDER BY miles),'0 hours'::interval) AS goal_section,
+    goal - 
+        coalesce(lag(goal) OVER (ORDER BY miles),'0 hours'::interval) 
+        AS goal_section,
     '2017-09-08 08:00:00 CDT'::timestamptz + goal AS goal_time,
     (goal - coalesce(lag(goal) OVER (ORDER BY miles),'0 hours'::interval)) 
     /  
@@ -180,14 +194,16 @@ CREATE TABLE bitner_goal_track AS
 WITH
 t1 AS (
     SELECT 
-        st_addmeasure(geom, to_epoch(goal_from), to_epoch(goal_to)) AS geom
+        st_addmeasure(geom, to_epoch(goal_from), to_epoch(goal_to)) 
+            AS geom
     FROM
         sections JOIN bitner_goal USING (aidstation)
 ),
 p1 AS 
     (SELECT (st_dumppoints(geom)).* FROM t1),
 p2 AS
-    (SELECT DISTINCT ON (st_m(geom)) geom, st_m(geom) FROM p1 ORDER BY st_m(geom))
+    (SELECT DISTINCT ON (st_m(geom)) geom, st_m(geom) 
+     FROM p1 ORDER BY st_m(geom))
 SELECT st_makeline(geom) as geom FROM p2;
 
 SELECT substring(st_asewkt(geom),0,100) FROM bitner_goal_track;
@@ -212,11 +228,15 @@ goalsplits AS (
 )
 SELECT 
     aidstation,
-    miles as miles,
-    miles - coalesce(lag(miles) OVER (ORDER BY miles),0) AS miles_section,
-    coalesce(lag(goal) OVER (ORDER BY miles),'0 hours'::interval) as goal_from,
-    goal as goal_to,
-    goal - coalesce(lag(goal) OVER (ORDER BY miles),'0 hours'::interval) AS goal_section,
+    miles AS miles,
+    miles - coalesce(lag(miles) OVER (ORDER BY miles),0) 
+        AS miles_section,
+    coalesce(lag(goal) OVER (ORDER BY miles),'0 hours'::interval) 
+        AS goal_from,
+    goal AS goal_to,
+    goal - 
+        coalesce(lag(goal) OVER (ORDER BY miles),'0 hours'::interval) 
+        AS goal_section,
     '2017-09-08 08:00:00 CDT'::timestamptz + goal AS goal_time,
     (goal - coalesce(lag(goal) OVER (ORDER BY miles),'0 hours'::interval)) 
     /  
@@ -231,14 +251,16 @@ CREATE TABLE target_goal_track AS
 WITH
 t1 AS (
     SELECT 
-        st_addmeasure(geom, to_epoch(goal_from), to_epoch(goal_to)) AS geom
+        st_addmeasure(geom, to_epoch(goal_from), 
+        to_epoch(goal_to)) AS geom
     FROM
         sections JOIN target_goal USING (aidstation)
 ),
 p1 AS 
     (SELECT (st_dumppoints(geom)).* FROM t1),
 p2 AS
-    (SELECT DISTINCT ON (st_m(geom)) geom, st_m(geom) FROM p1 ORDER BY st_m(geom))
+    (SELECT DISTINCT ON (st_m(geom)) geom, st_m(geom) 
+     FROM p1 ORDER BY st_m(geom))
 SELECT st_makeline(geom) as geom FROM p2;
 
 SELECT substring(st_asewkt(geom),0,100) FROM target_goal_track;
